@@ -1,0 +1,15 @@
+*~
+
+*.pdf
+/_TODO_
+*.aux
+*.log
+*.out
+*.toc
+
+
+
+*.gz
+*.zip
+
+*.pyc

@@ -1,0 +1,156 @@
+\documentclass[11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[head=26pt, a4paper, margin=1.2in, top=1.4in, bottom=1.75in]{geometry}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage[hidelinks, colorlinks, urlcolor=blue, linkcolor=black,citecolor=magenta]
+{hyperref}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{listings}
+
+% ---------------- Page and margin/header/footer Setup -----------------
+\pagestyle{fancy}
+%\fancyhf{} % Clears header and footer
+\fancyhead{}
+\fancyfoot{}
+\lhead{\bfseries Calculation of homology groups\\for simplicial complexes - synopsis}
+\rhead{University of Copenhagen\\Computer Science}
+\lfoot{Page \thepage\ of \pageref{LastPage}}
+\rfoot{Nanna E. V. Bernbom}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+% ----------------------------------------------------------------------
+
+\newtheorem{mythm}{Theorem}
+\newtheorem{mydef}{Definition}
+
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+\begin{document}
+\begin{titlepage}
+\title{\HRule \\[0.4cm]
+\textbf{Calculation of homology groups for simplicial complexes - synopsis}\\
+\HRule \\[0.4cm]}
+\author{\textbf{Nanna E. V. Bernbom} - zlt712\\\\
+\textit{Computer Science}\\
+\textit{University of Copenhagen}}
+\date{\today}
+
+\maketitle
+\thispagestyle{empty}
+\end{titlepage}
+
+\newpage
+\section*{Problem formulation}
+How does one implement an algorithm to calculate homology groups for simplicial complexes in 3D? 
+To be specific I have to:
+\begin{itemize}
+\item Understand the part of homology theory that is needed in order to implement an algorithm which calculates homology groups.
+\item Present some central theorems of the theory.
+\item Implement an algorithm that can calculate homology groups for simplicial complexes in 2D and 3D.
+\end{itemize}
+
+The homology theory of the project will initially be simplicial homology theory but can, if times permits, be changed to a more general homology theory.
+
+\section*{Motivation}
+Homology theory is a part of algebraic topology that deals with holes in geometric objects. In this report the geometric objects are simplicial complexes, which are made up of triangles of different dimensions that are glued together.
+
+There are different types of holes. Just consider a hole in a 2-torus and compare it to the hole that is the center of a 2-sphere. Homology theory can tell the difference between different types of holes, by observing that they can be caught by spheres of different dimensions. The cardinality of the $i$'th homology group is the number of holes of dimension $i$, which is what we want to know.
+
+To find the number of holes in a geometric object is not just an interesting mathematical discipline it also has interesting practical applications. Imagine that the simplicial complexes given to the algorithm are porous stones such as limestone, then by calculating the sizes of their homology groups one can get an insight into what their surfaces are like, and there by get a better understanding of how to for example remove oil from limestone or save $CO_2$ in limestone. 
+
+
+\section*{Time plan/tasks}
+The following are tasks that are parts of finishing the project.
+\begin{itemize}
+\item Understand the theory concerning simplicial complexes
+\begin{description}
+\item[product:]Section of the report with definitions and some important proofs for simplicial complexes.
+\item[resources needed:]None
+\item[dependencies:]None
+\item[time needed:]3 weeks
+\item[deadline:]2nd of March
+\end{description}
+
+\item Write synopsis.
+\begin{description}
+\item[product:]A handed in and approved synopsis.
+\item[resources needed:]None
+\item[dependencies:]None
+\item[time needed:]1 week
+\item[deadline:]15th of March
+\end{description}
+
+\item Understand the algorithm that calculates homology groups
+\begin{description}
+\item[product:]Section of the report containing some definitions and some important proofs concerning homology groups together with the algorithm used for calculating homology groups. 
+\item[resources needed:]
+\item[dependencies:]Understanding simplicial complexes
+\item[time needed:]1 month
+\item[deadline:]16th of March
+\end{description}
+
+\item Choose a method for implementing the algorithm that calculates homology groups.
+\begin{description}
+\item[product:]Section of report about choices concerning implementation such as python module, input and output. 
+\item[resources needed:]None
+\item[dependencies:]Understanding homology groups
+\item[time needed:]1 week 
+\item[deadline:]30th of March
+\end{description}
+
+\item Write halfway report.
+\begin{description}
+\item[product:]A handed in and approved halfway report.
+\item[resources needed:]None
+\item[dependencies:]None
+\item[time needed:]1 week
+\item[deadline:]11th of April
+\end{description}
+
+\item Implement and test algorithm in 2D.
+\begin{description}
+\item[product:]A tested implementation that can calculate homology groups for simplicial complexes in 2D.
+\item[resources needed:]A computer running Python
+\item[dependencies:]Choice of implementation method
+\item[time needed:]1 month
+\item[deadline:]4th of May
+\end{description}
+
+\item Implement and test algorithm in 3D.
+\begin{description}
+\item[product:]A tested implementation that can calculate homology groups for simplicial complexes in 3D.
+\item[resources needed:]A computer running Python
+\item[dependencies:]Choice of implementation method and an implemented method for 2D simplicial complexes.
+\item[time needed:]3 weeks
+\item[deadline:]25th of May
+\end{description}
+
+\item Write report.
+\begin{description}
+\item[product:]A handed in and approved report.
+\item[resources needed:]None
+\item[dependencies:]All the above
+\item[time needed:]2 weeks
+\item[deadline:]13th of June
+\end{description}
+\end{itemize}
+
+\section*{Literature}
+The following is the literature I have found so far which is relevant to the project.
+\begin{itemize}
+\item \emph{A Short Course in Computational Geometry and Topology}, Herbert Edelsbrunner, Springer, 2014
+\item \emph{Homology of Simplicial Complexes}, Allgaier et al., 2004
+\item \emph{An Introduction to Homology}, Prerna Nadathur, August 16, 2007
+\item \emph{Homology Theory a Primer},\\ \url{http://jeremykun.com/2013/04/03/homology-theory-a-primer/}, Jeremy Kun
+\item \emph{Computing Homology}, \url{http://jeremykun.com/2013/04/10/computing-homology/}, Jeremy Kun
+\end{itemize}
+\end{document}
