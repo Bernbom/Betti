@@ -56,75 +56,39 @@
 \section*{Introduction}
 Homology theory is a part of algebraic topology that deals with holes in geometric objects. In this report the geometric objects are simplicial complexes, which are made up of triangles of different dimensions that are glued together.
 
-There are different types of holes. Just consider a hole in a 2-torus and compare it to the hole that is the center of a 2-sphere. Homology theory can tell the difference between different types of holes, by observing that they can be caught by spheres of different dimensions. The cardinality of the $i$'th homology group is the number of holes of dimension $i$, which is what we want to know.
+There are different types of holes. Just consider a hole in a 2-torus and compare it to the hole that is the center of a 2-sphere. Homology theory can tell the difference between different types of holes, by observing that they can be caught by spheres of different dimensions. The dimension of the $i$'th homology group is the number of holes of dimension $i$, which is what we want to know.
 
 To find the number of holes in a geometric object is not just an interesting mathematical discipline it also has interesting practical applications. Imagine that the simplicial complexes given to the algorithm are porous stones such as limestone, then by calculating the sizes of their homology groups one can get an insight into what their surfaces are like, and there by get a better understanding of how to for example remove oil from limestone or save $CO_2$ in limestone. 
 \newpage
 
-\chapter{Mathematical Theory}
-In this chapter the mathematics needed to understand how to calculate homology groups is presented.
-
-\section{Linear Algebra}
-In this section some of the linear algebra theory that is used when homology groups are calculated. This section is primarily based on Niels V. Pedersens book \emph{Lineær Algebra}\cite{LinAlg}
-\subsection{Vector Spaces, Subspaces and Quotient Spaces}
-Let $V$ be a set and $\mathbb{F}$ a field. For $V$ to be a vector field over $\mathbb{F}$ two operations namely scalar product and sum must be defined which live up to 8 rules as described by Pedersen \cite[pp. 85-86]{LinAlg}. It is included here for completeness.
-\begin{mydef} 
-Let $V$ be a set and $\mathbb{F}$ a field. $V$ is a vector space over $\mathbb{F}$ if for $x,y\in V$ and $\lambda\in\mathbb{F}$ the scalar product $\lambda x\in V$ and the vector sum $x+y\in V$ and for arbitrary vectors $x,y,z\in V$ and scalars $\lambda,\mu\in\mathbb{F}$ the following rules are fulfilled:
-\begin{enumerate}
-\item $(x+y)+z = x+(y+z)$
-\item $x+0=x$
-\item $x+(-x)=0$
-\item $x+y=y+x$
-\item $\lambda(x+y)=\lambda x+\lambda y$
-\item $(\lambda+\mu)x=\lambda x + \mu x$
-\item $(\lambda\mu)x=\lambda(\mu x)$
-\item $1x=x$
-\end{enumerate}
-\end{mydef}
-Having a vector space $V$ it is possible to define a subspace $U$ of $V$.\cite[p.93]{LinAlg}
-\begin{mydef}
-A non-empty subset $U\subset V$ is called a subspace if the following conditions holds
-\begin{enumerate}
-\item if $x\in U$ and $\lambda\in\mathbb{F}$ then $\lambda x\in U$
-\item if $x,y\in U$ then $x+y\in U$
-\end{enumerate} 
-\end{mydef}
-Now it is time to define a quotient space. In order to do that an equivalence relation is needed. 
-
-Let $V$ be a vector space over a field $\mathbb{F}$ and $U\subset V$. We say $a\sim b$ if and only if $a-b\in U$. It is clear that all elements of $U$ are equivalent.
-This equivalence relation gives rise to a set of equivalence classes $[x]=\{x+u,u\in U\}$
-The quotient space $V/\sim = V/U$ is then defined as this set of equivalence classes over $V$ by $\sim$.
-One can define scalar multiplication and addition on the quotient space in the following way. \cite{wikiQuo}
+\section{Time Schedule}
+\begin{description}
+\item[Status so far:] I have written about simplicial complexes, homology groups and made an appendix about linear algebra. Besides from that I have written two examples on how to use the theory to calculate the Betti-vector for a simplicial complex. Furthermore there is now a nD-version of the Betti-vector calculating software, where n is a natural number, which is currently being tested. 
+\item[remaining tasks]
 \begin{itemize}
-\item $\lambda[x]=[\lambda x]$, for all $\lambda\in\mathbb{F}$
-\item $[x]+[y]=[x+y]$
+\item Finish testing the implementation of the Betti-vector calculator.
+\item Describe the implementation of the Betti-vector calculator
+\item Describe the tests
+\item Expand the project to either contain $\alpha$-complexes, persistent homology or an interesting dataset.
+\item Hand in the final report
 \end{itemize}
-To see that the first definition is well defined let $x'\in[x]$ be arbitrarily chosen. Then $x'$ can be written as $x'=x+u$ for some $u\in U$ and 
-\begin{equation*}
-\lambda x' = \lambda (x + u) = \lambda x + \lambda u \in [\lambda x],
-\end{equation*}
-since $\lambda u \in U$ by the definition of a subspace.
+\end{description}
 
-Similarly can it be proven that the second definition is well defined. Let $x'\in[x]$ and $y'\in [y]$ be arbitrarily chosen. Then $x'$ can be written as $x'=x+u$ for some $u\in U$ and $y' = y+u'$ for some $u'\in U$. It is now clear that
-\begin{equation*}
-x'+y'=(x+u)+(y+u')=x+y+(u+u')\in [x+y],
-\end{equation*}
-since $u+u'\in U$ by the definition of a subspace.
+The deadlines for when tasks should be done are as follows:
+\begin{description}
+\item[Finish testing]April 27
+\item[Describe the tests]May 4
+\item[Describe the implementation]May 11
+\item[Expand project]June 1
+\item[Hand in final report]June 13
+\end{description}
+\newpage
 
-
-\subsection{The Rank-Nullity Theorem}
-The Rank-Nullity Theorem is used throughout the entire project, since it is an easy way to calculate the dimensions of the kernel of mappings such as the boundary maps. The theorem is as follows\cite[p. 109]{LinAlg}: 
-\begin{mythm}
-Let $f:U\to V$ be a linear mapping then the following holds
-\begin{equation*}
-\textnormal{rk}f+\textnormal{dim}(\textnormal{ker})=\textnormal{dim}U
-\end{equation*}
-\end{mythm}
-
-To finish of this section, remember that the rank of a linear map does not change when one does row reductions on it.
+\chapter{Mathematical Theory}
+In this chapter the mathematics needed to understand how to calculate homology groups is presented. For a walk through of the linear algebra needed have a look in the appendix.
 
 \section{Simplicial Complexes}
-Now let us look at simplicial complexes. A simplicial complex consists of simplices that are 'glued' together in a nice way.
+Let us look at simplicial complexes. A simplicial complex consists of simplices that are 'glued' together in a nice way.
 
 Geometrically speaking an n-simplex is a generalisation of a triangle. It is the convex hull of $n+1$ vertices \cite{Nadathur}. But since this is topology an algebraic definition without the notion of convex is needed.
 
@@ -169,7 +133,7 @@ The augmented chain complex is a series of vector spaces and their boundary func
 \end{equation*}
 
 A very important theorem when it comes to boundary functions is one that describes what happens when one takes the boundary of a boundary.
-\begin{mythm}
+\begin{mythm}\label{thm:boundary}
 For all $i\in\mathbb{Z}$ 
 \begin{equation*}
 \partial_i\circ\partial_{i+1}=0
@@ -237,27 +201,38 @@ and for $x\in k^{F_i(\Delta)}$, with $x = \sum_{l=1}^{m_i}a_le_{\sigma_l}$ and $
 \lambda x = \sum_{l=1}^{m_i}(\lambda a_l)e_{\sigma_l}
 \end{equation*}
 
-Each boundary function $\partial_i:F_i(\Delta)\to F_{i-1}(\Delta)$ gives rise to two subspaces namely the image and kernel of $\partial_i$. %TODO!!! 
+Each boundary function $\partial_i:F_i(\Delta)\to F_{i-1}(\Delta)$ gives rise to two subspaces namely the image and kernel of $\partial_i$. The image, $\textrm{im}(\partial_i)$, is a subspace of $F_{i-1}(\Delta)$ and the kernel, $\textrm{ker}(\partial_i)$, is a subspace of $F_{i}(\Delta)$. 
+
+There is a relation these image and kernel subspaces namely that 
+\begin{equation*}
+\textrm{im}(\partial_{i+1})\subset\textrm{ker}(\partial_i).
+\end{equation*}
+This follows from theorem \ref{thm:boundary} in the previous section. 
+For let $a\in \textrm{im}(\partial_{i+1})$ then if we take $\partial_i$ of $a$ we get that $\partial_i(a)=0\implies a\in \textrm{ker}(\partial_i)$ and since $a$ was arbitrarily chosen that $\textrm{im}(\partial_{i+1})\subset \textrm{ker}(\partial_i)$ 
+similarly assume $\textrm{im}(\partial_{i+1})\subset \textrm{ker}(\partial_i)$ and let $b$ be in the pre-image of $\partial_{i+1}$ then there exists an $a\in\textrm{im}(\partial_{i+1})$ such that 
+$\partial_{i+1}(b)=a$ since $a\in\textrm{ker}(\partial_i)$, $\partial_i\circ\partial_{i+1}=\partial_i(\partial_{i+1}(b))=0$. 
 
 For $i\in\mathbb{Z}$ he $i$'th reduced homology of $\Delta$ over $k$ can be found as the quotient space of kernel of the $i$'th boundary function and the image of the $i+1$'th boundary function. \cite[p.2]{Allgaier}
 \begin{equation}
 \bar{H}_i(\Delta;k):=\textrm{ker}(\partial_i)/\textrm{im}(\partial_{i+1})
 \end{equation}
 
-Having the homology groups we can calculate their cardinality these are also called the Betti numbers of the simplicial complex. The $i$'th Betti number can be understood as the number of holes which can be caught by an $i$-sphere. \cite{wikiBetti}
+Having the homology groups we can calculate their dimensions these are also called the Betti numbers of the simplicial complex. The $i$'th Betti number can be understood as the number of holes which can be caught by an $i$-sphere. \cite{wikiBetti}
 
-The dimension, d, of the homology group can be found by the following equation. \cite[p.2]{Allgaier}
+What is interesting about the Betti numbers is the fact that they do not depend on the  specific simplicial complex but on the "shape" of the complex. So if two simplicial complexes represent the same object then their Betti numbers will be the same, since the homology groups of the simplicial complexes are isomorphic to one another.\cite[p. 70]{Edelsbrunner} 
+
+The dimension, $H_i$, of the $i$'th homology group can be found by the following equation. \cite[p.2]{Allgaier}
 \begin{equation*}
-d = \textrm{dim}(\textrm{ker}(\partial_i))-\textrm{dim}(\textrm{im}(\partial_{i+1}))
+H_i = \textrm{dim}(\textrm{ker}(\partial_i))-\textrm{dim}(\textrm{im}(\partial_{i+1}))
 \end{equation*}
 
-A H-vector is a way to present the Betti numbers in an orderly manner. If $H_i$ is the $i$'th Betti number a H-vector has the following form:
+A Betti-vector is a way to present the Betti numbers in an orderly manner. If $H_i$ is the $i$'th Betti number a Betti-vector has the following form:
 \begin{equation*}
 H = (H_{-1},H_0,H_1,\dots,H_n)
 \end{equation*}
 where $n$ is the dimension of the simplicial complex
 
-A f-vector is like the H-vector a way to present knowledge about a simplicial complex in a concise way. The $i$'th entry in f-vector is the the number of faces of $i$ dimensions \cite[p.15]{Jonsson}. So
+A f-vector is like the Betti-vector a way to present knowledge about a simplicial complex in a concise way. The $i$'th entry in f-vector is the the number of faces of $i$ dimensions \cite[p.15]{Jonsson}. So
 \begin{equation*}
 f = (|F_{-1}|,|F_0|,\dots,|F_n|)
 \end{equation*}
@@ -428,7 +403,7 @@ since $dim(ker(\partial_0))-dim(im(\partial_{1}))=4-3=1$, and
 since $dim(ker(\partial_{-1}))-dim(im(\partial_{0}))=1-1=0$
 \end{itemize}
 The rest of the homology groups are 0 since they are $0/0$-expressions.
-So the H-vector is $H=(0,1,1,0)$
+So the Betti-vector is $H=(0,1,1,0)$
 \end{myex}
 The next example shows that the choice of partitioning of an object into a specific simplicial complex in stead of another does not change the Betti numbers.
 \begin{myex}
@@ -548,7 +523,7 @@ since $dim(ker(\partial_0))-dim(im(\partial_{1}))=5-4=1$, and
 since $dim(ker(\partial_{-1}))-dim(im(\partial_{0}))=1-1=0$
 \end{itemize}
 The rest of the homology groups are 0 since they are $0/0$-expressions.
-The H-vector is then $H=(0,1,1,0)$
+The Betti-vector is then $H=(0,1,1,0)$
 \end{myex}
 When one compares the homology groups of $\Delta_1$ and $\Delta_2$ one sees that they are the same. As it is explained in the theory section this is no coincidence, since the only difference between $\Delta_1$ and $\Delta_2$ is the partitioning into simplexes the object which is split is the same.
 
@@ -566,4 +541,65 @@ Herbert Edelsbrunner, \emph{A Short Course in Computational Geometry and Topolog
 \bibitem{wikiBetti} unknown, \emph{Betti Numbers}, Wikipedia, March 29 2016
 \bibitem{Jonsson} Jakob Jonsson, \emph{Introduction to simplicial homology}, February 3, 2011
 \end{thebibliography}
+
+\appendix
+\chapter{Linear Algebra}
+In this section some of the linear algebra theory that is used when homology groups are calculated. This section is primarily based on Niels V. Pedersens book \emph{Lineær Algebra}\cite{LinAlg}
+\section{Vector Spaces, Subspaces and Quotient Spaces}
+Let $V$ be a set and $\mathbb{F}$ a field. For $V$ to be a vector field over $\mathbb{F}$ two operations namely scalar product and sum must be defined which live up to 8 rules as described by Pedersen \cite[pp. 85-86]{LinAlg}. It is included here for completeness.
+\begin{mydef} 
+Let $V$ be a set and $\mathbb{F}$ a field. $V$ is a vector space over $\mathbb{F}$ if for $x,y\in V$ and $\lambda\in\mathbb{F}$ the scalar product $\lambda x\in V$ and the vector sum $x+y\in V$ and for arbitrary vectors $x,y,z\in V$ and scalars $\lambda,\mu\in\mathbb{F}$ the following rules are fulfilled:
+\begin{enumerate}
+\item $(x+y)+z = x+(y+z)$
+\item $x+0=x$
+\item $x+(-x)=0$
+\item $x+y=y+x$
+\item $\lambda(x+y)=\lambda x+\lambda y$
+\item $(\lambda+\mu)x=\lambda x + \mu x$
+\item $(\lambda\mu)x=\lambda(\mu x)$
+\item $1x=x$
+\end{enumerate}
+\end{mydef}
+Having a vector space $V$ it is possible to define a subspace $U$ of $V$.\cite[p.93]{LinAlg}
+\begin{mydef}
+A non-empty subset $U\subset V$ is called a subspace if the following conditions holds
+\begin{enumerate}
+\item if $x\in U$ and $\lambda\in\mathbb{F}$ then $\lambda x\in U$
+\item if $x,y\in U$ then $x+y\in U$
+\end{enumerate} 
+\end{mydef}
+Now it is time to define a quotient space. In order to do that an equivalence relation is needed. 
+
+Let $V$ be a vector space over a field $\mathbb{F}$ and $U\subset V$. We say $a\sim b$ if and only if $a-b\in U$. It is clear that all elements of $U$ are equivalent.
+This equivalence relation gives rise to a set of equivalence classes $[x]=\{x+u,u\in U\}$
+The quotient space $V/\sim = V/U$ is then defined as this set of equivalence classes over $V$ by $\sim$.
+One can define scalar multiplication and addition on the quotient space in the following way. \cite{wikiQuo}
+\begin{itemize}
+\item $\lambda[x]=[\lambda x]$, for all $\lambda\in\mathbb{F}$
+\item $[x]+[y]=[x+y]$
+\end{itemize}
+To see that the first definition is well defined let $x'\in[x]$ be arbitrarily chosen. Then $x'$ can be written as $x'=x+u$ for some $u\in U$ and 
+\begin{equation*}
+\lambda x' = \lambda (x + u) = \lambda x + \lambda u \in [\lambda x],
+\end{equation*}
+since $\lambda u \in U$ by the definition of a subspace.
+
+Similarly can it be proven that the second definition is well defined. Let $x'\in[x]$ and $y'\in [y]$ be arbitrarily chosen. Then $x'$ can be written as $x'=x+u$ for some $u\in U$ and $y' = y+u'$ for some $u'\in U$. It is now clear that
+\begin{equation*}
+x'+y'=(x+u)+(y+u')=x+y+(u+u')\in [x+y],
+\end{equation*}
+since $u+u'\in U$ by the definition of a subspace.
+
+
+\section{The Rank-Nullity Theorem}
+The Rank-Nullity Theorem is used throughout the entire project, since it is an easy way to calculate the dimensions of the kernel of mappings such as the boundary maps. The theorem is as follows\cite[p. 109]{LinAlg}: 
+\begin{mythm}
+Let $f:U\to V$ be a linear mapping then the following holds
+\begin{equation*}
+\textnormal{rk}f+\textnormal{dim}(\textnormal{ker})=\textnormal{dim}U
+\end{equation*}
+\end{mythm}
+
+To finish of this section, remember that the rank of a linear map does not change when one does row reductions on it.
+
 \end{document}
