@@ -22,7 +22,10 @@ def betti(d,simCom):
     for k in range(n-1):
         bound[k] = prep.boundary(f[k+1],f[k])
         bound[k] = upTri.tri(bound[k])
-    dims = [(0,1)]+map(upTri.dims,bound)+[(0,0)] 
+    if simCom=="":
+        dims = [(0,0)]+map(upTri.dims,bound)+[(0,0)] 
+    else:
+        dims = [(0,1)]+map(upTri.dims,bound)+[(0,0)] 
     # calculate the homology groups
     for k in range(n):
         H[k] = dims[k][1]-dims[k+1][0]
