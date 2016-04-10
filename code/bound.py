@@ -29,5 +29,5 @@ def boundary(a,b):
                     temp = b.index(tempStr)
                     B[temp,j]=(-1)**i
                 except ValueError:
-                    print "inputs does not match"
+                    raise ValueError('inputs does not match: a=%s , b=%s' %(' '.join(a), ' '.join(b)))
     return B
