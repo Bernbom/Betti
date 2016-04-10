@@ -16,7 +16,7 @@ class TestHom(unittest.TestCase):
         self.assertEqual(hom.betti(2,'123 234 5'),[0,1,0,0])
 
     def test_2_dim_empty(self):
-        self.assertEqual(hom.betti(2,''),[0,0,0,0]) # fejler: giver [1,0,0,0]
+        self.assertEqual(hom.betti(2,''),[0,0,0,0])
 
     def test_2_dim_1_elm(self):
         self.assertEqual(hom.betti(2,'1'),[0,0,0,0])
