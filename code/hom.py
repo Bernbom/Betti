@@ -1,6 +1,6 @@
 import numpy as np
 import prep
-import upTri
+import gauss
 import bound as b
 import imKer
 
@@ -23,7 +23,7 @@ def betti(d,simCom):
     # maps
     for k in range(n-1):
         bound[k] = b.boundary(f[k+1],f[k])
-        bound[k] = upTri.tri(bound[k])
+        bound[k] = gauss.reduce(bound[k])
     if simCom=="":
         dims = [(0,0)]+map(imKer.dims,bound)+[(0,0)] 
     else:

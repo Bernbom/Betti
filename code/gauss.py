@@ -1,7 +1,7 @@
 import numpy as np
 import rowOp
 
-def tri(A):
+def reduce(A):
     """
     Given a matrix returns an upper triangle-matrix with 1's or 0's
     in the diagonal
