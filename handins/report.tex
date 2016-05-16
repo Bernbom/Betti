@@ -608,14 +608,15 @@ I will now go through all the functions to describe how they work.
 \begin{description}
 \item[\texttt{hom.betti(d,<maximal simplices>)}] calculates the Betti-vector of the d dimensional simplicial complex with the given maximal simplices.
 \item[\texttt{bound.boundary(a,b)}]creates the boundary matrix from a to b, given as lists of strings, which is the coefficients of the boundary functions: $\partial(e_{\sigma}) = \sum_i((-1)^{index(i)}e_{\sigma\setminus i})$.
-\item[\texttt{gauss.elimination}] 
-\item[\texttt{im\_ker.dim}] 
-\item[\texttt{prep.prepare}] 
-\item[\texttt{row.swap}] 
-\item[\texttt{row.scale}] 
-\item[\texttt{row.combine}] 
+\item[\texttt{gauss.elimination(A)}] given a matrix A returns the gauss eliminated matrix
+\item[\texttt{im\_ker.dim(A)}] given a matrix from tri(A) returns the dimensions of its image and kernel 
+\item[\texttt{prep.prepare(<maximal simplices>)}] given the maximal faces of a simplicial complex, as a string, creates a list of faces in that complex
+\item[\texttt{row.swap(A,i,j)}] in matrix A: swap row i and j. This function is necessary since NumPy does not eagerly copy data but only does it when it is explicitly told to do it.
+\item[\texttt{row.scale(A,i,n)}] in matrix A: multiply row i with n.
+\item[\texttt{row.combine(A,i,j,n)}] in matrix A: add row j to row i n times
 \end{description}
 
+\section{Tests}
 
 \newpage
 

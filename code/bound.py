@@ -2,7 +2,6 @@ import numpy as np
 
 def boundary(a,b):
     """
-    boundary(a,b)
     creates the boundary matrix from a to b, given as lists of strings,
     which is the coefficient of the 
     boundary functions: d_i(e_sigma) = sum((-1)**(index(i))e_sigma\i,i)

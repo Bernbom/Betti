@@ -23,7 +23,7 @@ def betti(d,simCom):
     # maps
     for k in range(n-1):
         bound[k] = b.boundary(f[k+1],f[k])
-        bound[k] = gauss.reduce(bound[k])
+        bound[k] = gauss.elimination(bound[k])
     if simCom=="":
         dims = [(0,0)]+map(im_ker.dims,bound)+[(0,0)] 
     else:

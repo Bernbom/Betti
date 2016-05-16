@@ -3,9 +3,8 @@ import itertools as it
 
 def prepare(simCom):
     """
-    prepare(str) --> list(str)
-    given the maximal faces of a simplicial complex creates a list of faces in 
-    that complex 
+    given the maximal faces of a simplicial complex, as a string, creates a list 
+    of faces in that complex 
     """
     simCom = simCom.split(' ')
     s = simCom
