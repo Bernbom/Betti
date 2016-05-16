@@ -1,5 +1,5 @@
 import numpy as np
-import rowOp
+import row
 
 def reduce(A):
     """
@@ -15,17 +15,17 @@ def reduce(A):
                 if A[k,j]==0:
                     k+=1
                 else:
-                    rowOp.rowSwap(A,i,k)
+                    row.swap(A,i,k)
                     break
             if k == numRows:
                 j += 1
                 continue
         p = float(A[i,j])
-        rowOp.rowScale(A,i,1/p)
+        row.scale(A,i,1/p)
         for l in range(numRows):
             if l != i:
                 n = A[l,j]
-                rowOp.rowCombine(A,l,i,-n)
+                row.combine(A,l,i,-n)
         i += 1
         j += 1
     return A

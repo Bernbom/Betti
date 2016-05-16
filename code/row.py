@@ -1,6 +1,6 @@
 import numpy as np
 
-def rowSwap(A,i,j):
+def swap(A,i,j):
     """
     in matrix A: swap row i and j
     """
@@ -8,13 +8,13 @@ def rowSwap(A,i,j):
     A[i,:] = A[j,:]
     A[j,:] = temp
 
-def rowScale(A,i,n):
+def scale(A,i,n):
     """
     in matrix A: multiply row i with n
     """
     A[i,:] = n*A[i,:]   
 
-def rowCombine(A,i,j,n):
+def combine(A,i,j,n):
     """
     in matrix A: add row j to row i n times
     """

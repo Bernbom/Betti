@@ -2,7 +2,7 @@ import numpy as np
 import prep
 import gauss
 import bound as b
-import imKer
+import im_ker
 
 def betti(d,simCom):
     """
@@ -25,9 +25,9 @@ def betti(d,simCom):
         bound[k] = b.boundary(f[k+1],f[k])
         bound[k] = gauss.reduce(bound[k])
     if simCom=="":
-        dims = [(0,0)]+map(imKer.dims,bound)+[(0,0)] 
+        dims = [(0,0)]+map(im_ker.dims,bound)+[(0,0)] 
     else:
-        dims = [(0,1)]+map(imKer.dims,bound)+[(0,0)] 
+        dims = [(0,1)]+map(im_ker.dims,bound)+[(0,0)] 
     # calculate the homology groups
     for k in range(n):
         H[k] = dims[k][1]-dims[k+1][0]

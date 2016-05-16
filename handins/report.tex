@@ -29,10 +29,12 @@
 % ----------------------------------------------------------------------
 
 \newtheorem{mythm}{Theorem}[chapter]
+\newtheorem{mylem}[mythm]{Lemma}
 \newtheorem{mydef}[mythm]{Definition}
 \newtheorem{myex}[mythm]{Example}
 
 \newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+\DeclareMathOperator{\im}{im}
 
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 
@@ -60,7 +62,7 @@ Homology theory is a part of algebraic topology that deals with holes in geometr
 
 There are different types of holes. Just consider a hole in a 2-torus and compare it to the hole that is the center of a 2-sphere. Homology theory can tell the difference between different types of holes, by observing that they can be caught by spheres of different dimensions. The dimension of the $i$'th homology group is the number of holes of dimension $i$, which is what we want to know.
 
-To find the number of holes in a geometric object is not just an interesting mathematical discipline it also has interesting practical applications. Imagine that the simplicial complexes given to the algorithm are porous stones such as limestone, then by calculating the sizes of their homology groups one can get an insight into what their surfaces are like, and there by get a better understanding of how to for example remove oil from limestone or save $CO_2$ in limestone. 
+To find the number of holes in a geometric object is not just an interesting mathematical discipline, it also has interesting practical applications. Imagine that the simplicial complexes given to the algorithm are porous stones such as limestone, then by calculating the sizes of their homology groups one can get an insight into what their surfaces are like, and there by get a better understanding of how to for example remove oil from limestone or save $CO_2$ in limestone. 
 \newpage
 
 \section{Time Schedule}
@@ -92,10 +94,10 @@ In this chapter the mathematics needed to understand how to calculate homology g
 \section{Simplicial Complexes}
 Let us look at simplicial complexes. A simplicial complex consists of simplices that are 'glued' together in a nice way.
 
-Geometrically speaking an n-simplex is a generalisation of a triangle. It is the convex hull of $n+1$ vertices in general position \cite{Nadathur}. But since this is topology an algebraic definition without the notion of convex is needed.
+Geometrically speaking an n-simplex is a generalisation of a triangle. It is the convex hull of $n+1$ vertices in general position \cite{Nadathur}. But since this is topology, an algebraic definition without the notion of convexity is needed.
 
 \begin{mydef}[n-simplex]
-Let $n\in\{0,1,\dots\}$. An n-simplex is a structure of $n+1$ vertices containing all its subsets.
+Let $n\in\{-1,0,1,\dots\}$. An n-simplex is a structure of $n+1$ vertices containing all its subsets. In partiqular $\emptyset$ is the $-1$-simplex.
 \end{mydef}
 
 \begin{mydef}[faces]
@@ -116,7 +118,7 @@ A simplicial complex $\Delta$ on $[n] := \{1,2,\dots ,n\}$ is a finite set of si
 \end{itemize}
 \end{mydef}
 
-For each simplicial complex one can make an augmented chain complex over $k$, where $k$ is a field. For our purposes $k=\mathbb{R}$.
+For each simplicial complex one can make a chain complex over $k$, where $k$ is a field, using the following two definitions. For our purposes $k=\mathbb{R}$.
 
 \begin{mydef}[$k^{F_i(\Delta)}$ \cite{Allgaier}]
 Let $\Delta$ be a simplicial complex on $[n] := \{1,2,\dots ,n\}$. For $i\in \mathbb{Z}$ let $F_i(\Delta)$ be the set of the $i$-dimensional faces of $\Delta$ and for each $\sigma\in F_i(\Delta)$, let $e_{\sigma}$ denote the corresponding basis vector in the k-vector space, $k^{F_i(\Delta)}$. Note that for $i>n-1$ or $i<-1$, $k^{F_i(\Delta)}:=0$.
@@ -133,12 +135,17 @@ The $\partial_i$'s are extended linearly to all of the $k^{F_i(\Delta)}$'s as fo
 \end{mydef}
 We call $\partial_i$ the $i$'th boundary function.
 
-The augmented chain complex is a series of vector spaces and their boundary functions as follows \cite{Allgaier}:
+The chain complex is a series of vector spaces and their boundary functions as follows:
+\begin{equation*}
+k^{F_{n-1}(\Delta)}\overset{\partial_{n-1}}{\to}\dots\overset{\partial_{i+1}}{\to} k^{F_{i}(\Delta)}\overset{\partial_{i}}{\to}k^{F_{i-1}(\Delta)}\overset{\partial_{i-1}}{\to}\dots\overset{\partial_{0}}{\to} k^{F_{-1}(\Delta)}.
+\end{equation*}
+
+The chain complex can be expanded to an augmented chain complex as follows \cite{Allgaier}:
 \begin{equation*}
 0\to k^{F_{n-1}(\Delta)}\overset{\partial_{n-1}}{\to}\dots\overset{\partial_{i+1}}{\to} k^{F_{i}(\Delta)}\overset{\partial_{i}}{\to}k^{F_{i-1}(\Delta)}\overset{\partial_{i-1}}{\to}\dots\overset{\partial_{0}}{\to} k^{F_{-1}(\Delta)}\to 0.
 \end{equation*}
 
-A very important classical theorem when it comes to boundary functions is one that describes what happens when one takes the boundary of a boundary.
+A very important classical theorem when it comes to boundary functions is one that describes what happens when one takes the boundary of a boundary. Among other things this theorem embodies the concept of orientation of simplices.
 \begin{mythm}\label{thm:boundary}
 For all $i\in\mathbb{Z}$ 
 \begin{equation*}
@@ -163,9 +170,9 @@ Now let $i=0,1,\dots,n-2$. For $\sigma\in F_{i+1}(\Delta)$ we have
 \partial_i(\partial_{i+1}(e_\sigma))&=\partial_i\left(\sum_{j\in\sigma}\textnormal{sign}(j,\sigma)e_{\sigma\setminus j}\right) \\
 &=\sum_{j\in\sigma}\partial_i\left(\textnormal{sign}(j,\sigma)e_{\sigma\setminus j}\right)\\
 &=\sum_{j\in\sigma}\textnormal{sign}(j,\sigma)\partial_i\left(e_{\sigma\setminus j}\right)\\
-&=\sum_{j\in\sigma}\textnormal{sign}(j,\sigma)\sum_{k\in\sigma\setminus j}\textnormal{sign}\left(k,\sigma\setminus j\right)e_{(\sigma\setminus j)\setminus k}\\
+&=\sum_{j\in\sigma}\textnormal{sign}(j,\sigma)\sum_{k\in\sigma\setminus j}\textnormal{sign}\left(k,\sigma\setminus j\right)e_{(\sigma\setminus j)\setminus k}\numberthis \label{eq_boundary: double_sum}\\
 \end{align*}
-To get further in the proof note that if we let $a,b\in\sigma$ be arbitrarily chosen. There are two ways for a basis vector $e_{\left(\sigma\setminus\{a,b\}\right)}$ to appear in this double sum. Either as $e_{(\sigma\setminus a)\setminus b}$ or as $e_{(\sigma\setminus b)\setminus a}$. From this fact we can rewrite $\partial_i(\partial_{i+1}(e_\sigma))$ to:
+Let $a,b\in\sigma$ be arbitrarily chosen such that $a\not=b$. Then the two basis vectors $e_{(\sigma\setminus a)\setminus b}$ and $e_{(\sigma\setminus b)\setminus a}$ will apear in (\ref{eq_boundary: double_sum}). Note however, that these two basis vectors are the same. The only difference being whether $a$ or $b$ are removed first from $\sigma$. Now we can rewrite (\ref{eq_boundary: double_sum}) to
 \begin{equation}
 \partial_i(\partial_{i+1}(e_\sigma))=\sum_{\{j,k\}\in\sigma}\left(\textnormal{sign}(j,\sigma)\textnormal{sign}(k,\sigma\setminus j) + \textnormal{sign}(k,\sigma)\textnormal{sign}(j,\sigma\setminus k)\right)e_{\sigma\setminus\{j,k\}} \label{eq_boundary: 0}
 \end{equation}
@@ -207,29 +214,39 @@ and for $x\in k^{F_i(\Delta)}$, with $x = \sum_{l=1}^{m_i}a_le_{\sigma_l}$ and $
 \lambda x = \sum_{l=1}^{m_i}(\lambda a_l)e_{\sigma_l}.
 \end{equation*}
 
-Each boundary function $\partial_i:F_i(\Delta)\to F_{i-1}(\Delta)$ gives rise to two subspaces, namely the image and kernel of $\partial_i$. The image, $\textrm{im}(\partial_i)$, is a subspace of $F_{i-1}(\Delta)$ and the kernel, $\textrm{ker}(\partial_i)$, is a subspace of $F_{i}(\Delta)$. 
+Each boundary function $\partial_i:F_i(\Delta)\to F_{i-1}(\Delta)$ gives rise to two subspaces, namely the image and kernel of $\partial_i$. The image, $\im(\partial_i)$, is a subspace of $F_{i-1}(\Delta)$ and the kernel, $\ker(\partial_i)$, is a subspace of $F_{i}(\Delta)$. 
 
 There is a relation these image and kernel subspaces namely that 
 \begin{equation*}
-\textrm{im}(\partial_{i+1})\subset\textrm{ker}(\partial_i).
+\im(\partial_{i+1})\subset\ker(\partial_i).
 \end{equation*}
-This follows from theorem \ref{thm:boundary} in the previous section. 
-For let $a\in \textrm{im}(\partial_{i+1})$ then if we take $\partial_i$ of $a$ we get that $\partial_i(a)=0\implies a\in \textrm{ker}(\partial_i)$ and since $a$ was arbitrarily chosen that $\textrm{im}(\partial_{i+1})\subset \textrm{ker}(\partial_i)$ 
-similarly assume $\textrm{im}(\partial_{i+1})\subset \textrm{ker}(\partial_i)$ and let $b$ be in the pre-image of $\partial_{i+1}$ then there exists an $a\in\textrm{im}(\partial_{i+1})$ such that 
-$\partial_{i+1}(b)=a$ since $a\in\textrm{ker}(\partial_i)$, $\partial_i\circ\partial_{i+1}=\partial_i(\partial_{i+1}(b))=0$. 
+This follows from theorem \ref{thm:boundary} in the previous section. As seen in lemma \ref{lem:subset}.
+\begin{mylem}\label{lem:subset}
+For all $i\in\mathbb{Z}$ 
+\begin{equation*}
+\partial_i\circ\partial_{i+1}=0 \Leftrightarrow \im(\partial_{i+1})\subset\ker(\partial_i).
+\end{equation*}
+\end{mylem}
+\begin{proof}
+Let $a\in \im(\partial_{i+1})$ then if we take $\partial_i$ of $a$ we get that $\partial_i(a)=0\implies a\in \ker(\partial_i)$ and since $a$ was arbitrarily chosen that $\im(\partial_{i+1})\subset \ker(\partial_i)$. 
+
+Similarly assume $\im(\partial_{i+1})\subset \ker(\partial_i)$ and let $b$ be in the pre-image of $\partial_{i+1}$ then there exists an $a\in\im(\partial_{i+1})$ such that 
+$\partial_{i+1}(b)=a$ since $a\in\ker(\partial_i)$, $\partial_i\circ\partial_{i+1}=\partial_i(\partial_{i+1}(b))=0$. 
+\end{proof}
+
 
 For $i\in\mathbb{Z}$ the $i$'th reduced homology of $\Delta$ over $k$ can be found as the quotient space of the kernel of the $i$'th boundary function and the image of the $i+1$'th boundary function. \cite[p.2]{Allgaier}
 \begin{equation}
-\bar{H}_i(\Delta;k):=\textrm{ker}(\partial_i)/\textrm{im}(\partial_{i+1}).
+\bar{H}_i(\Delta;k):=\ker(\partial_i)/\im(\partial_{i+1}).
 \end{equation}
 
-Having the homology groups we can calculate their dimensions; these are also called the Betti numbers of the simplicial complex. The $i$'th Betti number can be understood as the number of holes which can be caught by an $i$-sphere \cite{wikiBetti}.
+Having the homology groups we can calculate their dimensions since they are vector spaces; these are also called the Betti numbers of the simplicial complex. The $i$'th Betti number can be understood as the number of holes which can be caught by an $i$-sphere \cite{wikiBetti}.
 
 What is interesting about the Betti numbers is the fact that they do not depend on the  specific simplicial complex but on the "shape" of the complex. So if two simplicial complexes represent the same object then their Betti numbers will be the same, since the homology groups of the simplicial complexes are isomorphic to one another \cite[p. 70]{Edelsbrunner}. 
 
 The dimension, $H_i$, of the $i$'th homology group can be found by the following equation \cite[p.2]{Allgaier}:
 \begin{equation*}
-H_i = \textrm{dim}(\textrm{ker}(\partial_i))-\textrm{dim}(\textrm{im}(\partial_{i+1})).
+H_i = \dim(\ker(\partial_i))-\dim(\im(\partial_{i+1})).
 \end{equation*}
 
 A Betti-vector is a way to present the Betti numbers in an orderly manner. If $H_i$ is the $i$'th Betti number, a Betti-vector has the following form:
@@ -329,9 +346,9 @@ The matrices are row reduced to find the dimensions of the images and the kernel
 0
 \end{bmatrix}
 \end{align*}
-We count $rk(\partial_2)=1$ which is another way of saying $dim(im(\partial_2))=1$. Now we use the rank-nullity theorem (can be found as theorem \ref{thm:rank_nullity} in the appendix) to calculate the dimension of the kernel of $\partial_2$.
+We count $rk(\partial_2)=1$ which is another way of saying $\dim(\im(\partial_2))=1$. Now we use the rank-nullity theorem (can be found as theorem \ref{thm:rank_nullity} in the appendix) to calculate the dimension of the kernel of $\partial_2$.
 \begin{align*}
-dim(ker(\partial_2))&=dim(k^{F_2(\Delta)})-dim(im(\partial_2))\\
+\dim(\ker(\partial_2))&=\dim(k^{F_2(\Delta)})-\dim(\im(\partial_2))\\
 &=1-1= 0
 \end{align*}
 We continue to row-reduce $\partial_1$:
@@ -377,9 +394,9 @@ We continue to row-reduce $\partial_1$:
 0 & 0 & 0 & 0 & 0
 \end{bmatrix}
 \end{align*}
-We count $rk(\partial_1)=dim(im(\partial_1))=3$ and use the rank-nullity theorem to calculate the dimension of the kernel of $\partial_1$.
+We count $rk(\partial_1)=\dim(\im(\partial_1))=3$ and use the rank-nullity theorem to calculate the dimension of the kernel of $\partial_1$.
 \begin{align*}
-dim(ker(\partial_1))&=dim(k^{F_1(\Delta)})-dim(im(\partial_1))\\
+\dim(\ker(\partial_1))&=\dim(k^{F_1(\Delta)})-\dim(\im(\partial_1))\\
 &=5-3= 2
 \end{align*}
 Lastly note that 
@@ -389,29 +406,29 @@ Lastly note that
 1 & 1 & 1 & 1 & 1 
 \end{bmatrix}
 \end{equation*}
-gives us that $rk(\partial_0)=dim(im(\partial_0))=1$ and 
+gives us that $rk(\partial_0)=\dim(\im(\partial_0))=1$ and 
 \begin{align*}
-dim(ker(\partial_0))&=dim(k^{F_0(\Delta)})-dim(im(\partial_0))\\
+\dim(\ker(\partial_0))&=\dim(k^{F_0(\Delta)})-\dim(\im(\partial_0))\\
 &=5-1= 4.
 \end{align*}
 Now the Betti numbers can be calculated. Remember that the $i$'th homology group is calculated as follows:
 \begin{equation*}
-\bar{H}_i(\Delta)=kernel(\partial_i)/image(\partial_{i+1})\simeq k^d,
+\bar{H}_i(\Delta)=\ker(\partial_i)/\im (\partial_{i+1})\simeq k^d,
 \end{equation*}
-where $d$ is given by $d:=dim(ker(\partial_i))-dim(im(\partial_{i+1}))$. So 
+where $d$ is given by $d:=\dim(\ker(\partial_i))-\dim(\im(\partial_{i+1}))$. So 
 \begin{itemize}
-\item$\bar{H}_2(\Delta_1)=kernel(\partial_2)/image(\partial_{3})=0,$
-since $dim(ker(\partial_2))-dim(im(\partial_{3}))=0-0=0$,
-\item$\bar{H}_1(\Delta_1)=kernel(\partial_1)/image(\partial_{2})\simeq k,$ since $dim(ker(\partial_1))-dim(im(\partial_{2}))=2-1=1$,
-\item$\bar{H}_0(\Delta_1)=kernel(\partial_0)/image(\partial_{1})\simeq k,$
-since $dim(ker(\partial_0))-dim(im(\partial_{1}))=4-3=1$, and 
-\item$\bar{H}_{-1}(\Delta_1)=kernel(\partial_{-1})/image(\partial_{0})=0,$
-since $dim(ker(\partial_{-1}))-dim(im(\partial_{0}))=1-1=0$
+\item$\bar{H}_2(\Delta_1)=\ker(\partial_2)/\im(\partial_{3})=0,$
+since $\dim(\ker(\partial_2))-\dim(\im(\partial_{3}))=0-0=0$,
+\item$\bar{H}_1(\Delta_1)=\ker(\partial_1)/\im(\partial_{2})\simeq k,$ since $\dim(\ker(\partial_1))-\dim(\im(\partial_{2}))=2-1=1$,
+\item$\bar{H}_0(\Delta_1)=\ker(\partial_0)/\im(\partial_{1})\simeq k,$
+since $\dim(\ker(\partial_0))-\dim(\im(\partial_{1}))=4-3=1$, and 
+\item$\bar{H}_{-1}(\Delta_1)=\ker(\partial_{-1})/\im(\partial_{0})=0,$
+since $\dim(\ker(\partial_{-1}))-\dim(\im(\partial_{0}))=1-1=0$
 \end{itemize}
 The rest of the homology groups are 0 since they are $0/0$-expressions.
 So the Betti-vector is $H=(0,1,1,0)$
 \end{myex}
-The next example shows that the choice of partitioning of an object into a specific simplicial complex in stead of another does not change the Betti numbers.
+The next example illustrates that the choice of partitioning of an object into a specific simplicial complex instead of another does not change the Betti numbers.
 \begin{myex}
 Consider the simplicial complex $\Delta_2$ consisting of all the subsets of $\{1,2,3\},$ $\{1,3,4\},\{2,3,4\},\{2,5\},\{4,5\}$ and $\{6\}$
 \begin{figure}[H]
@@ -493,7 +510,7 @@ The matrices are row reduced to find the dimensions of the images and the kernel
 0 & 0 & 0 
 \end{bmatrix}
 \end{equation}
-From (\ref{eq:ex2_1}) we get that $rk(\partial_2)=dim(im(\partial_2))=3$. By the rank-nullity theorem we calculate $dim(ker(\partial_2))=3-3=0$.
+From (\ref{eq:ex2_1}) we get that $rk(\partial_2)=\dim(\im(\partial_2))=3$. By the rank-nullity theorem we calculate $\dim(\ker(\partial_2))=3-3=0$.
 
 The same is done for $\partial_1$.
 \begin{equation}\label{eq:ex2_2}
@@ -516,17 +533,17 @@ The same is done for $\partial_1$.
 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 
 \end{bmatrix}
 \end{equation}
-From (\ref{eq:ex2_2}) we get that $rk(\partial_1)=dim(im(\partial_1))=4$. Again by the rank-nullity theorem we calculate $dim(ker(\partial_1))=8-4=4$.
+From (\ref{eq:ex2_2}) we get that $rk(\partial_1)=\dim(\im(\partial_1))=4$. Again by the rank-nullity theorem we calculate $\dim(\ker(\partial_1))=8-4=4$.
 
-From (\ref{eq:ex2_0}) it can be seen that $rk(\partial_0)=dim(im(\partial_0))=1$. By the rank-nullity theorem it is calculated that $dim(ker(\partial_1))=6-1=5$. Now it is time for the Betti numbers.
+From (\ref{eq:ex2_0}) it can be seen that $rk(\partial_0)=\dim(\im(\partial_0))=1$. By the rank-nullity theorem it is calculated that $\dim(\ker(\partial_1))=6-1=5$. Now it is time for the Betti numbers.
 \begin{itemize}
-\item $\bar{H}_2(\Delta_2)=kernel(\partial_2)/image(\partial_{3})=0,$
-since $dim(ker(\partial_2))-dim(im(\partial_{3}))=0-0=0$,
-\item$\bar{H}_1(\Delta_2)=kernel(\partial_1)/image(\partial_{2})\simeq k,$ since $dim(ker(\partial_1))-dim(im(\partial_{2}))=4-3=1$,
-\item$\bar{H}_0(\Delta_2)=kernel(\partial_0)/image(\partial_{1})\simeq k,$
-since $dim(ker(\partial_0))-dim(im(\partial_{1}))=5-4=1$, and 
-\item$\bar{H}_{-1}(\Delta_2)=kernel(\partial_{-1})/image(\partial_{0})=0,$
-since $dim(ker(\partial_{-1}))-dim(im(\partial_{0}))=1-1=0$
+\item $\bar{H}_2(\Delta_2)=\ker(\partial_2)/\im(\partial_{3})=0,$
+since $\dim(\ker(\partial_2))-\dim(\im(\partial_{3}))=0-0=0$,
+\item$\bar{H}_1(\Delta_2)=\ker(\partial_1)/\im(\partial_{2})\simeq k,$ since $\dim(\ker(\partial_1))-\dim(\im(\partial_{2}))=4-3=1$,
+\item$\bar{H}_0(\Delta_2)=\ker(\partial_0)/\im(\partial_{1})\simeq k,$
+since $\dim(\ker(\partial_0))-\dim(\im(\partial_{1}))=5-4=1$, and 
+\item$\bar{H}_{-1}(\Delta_2)=\ker(\partial_{-1})/\im(\partial_{0})=0,$
+since $\dim(\ker(\partial_{-1}))-\dim(\im(\partial_{0}))=1-1=0$
 \end{itemize}
 The rest of the homology groups are 0 since they are $0/0$-expressions.
 The Betti-vector is then $H=(0,1,1,0)$
@@ -534,7 +551,7 @@ The Betti-vector is then $H=(0,1,1,0)$
 When one compares the homology groups of $\Delta_1$ and $\Delta_2$ one sees that they are the same. As it is explained in the theory section this is no coincidence, since the only difference between $\Delta_1$ and $\Delta_2$ is the partitioning into simplexes the object which is split is the same.
 
 \chapter{The Implementation}
-The algorithm to calculate Betti-vectors have been implemented in python as a part of this project. The module \texttt{NumPy} have been used throughout the code for representation of matrices. The module \texttt{Itertools} have been used in the function \texttt{prep.prepare}, which takes a string of the maximum simplices of a simplicial complex and returns a list of all the simplices in the simplicial complex, to create the strings representing the simplices.
+The algorithm to calculate Betti-vectors have been implemented in python as a part of this project. The module \texttt{NumPy} have been used throughout the code for representation of matrices. The module \texttt{Itertools} have been used in the function \texttt{prep.prepare}, which takes a string of the maximum simplices of a simplicial complex and returns a list of all the simplices in the simplicial complex, to create the strings representing the simplices. The source code can be found in appendix \ref{ch:source_code}.
 
 \begin{figure}[H]
 \center
@@ -548,12 +565,12 @@ The algorithm to calculate Betti-vectors have been implemented in python as a pa
 	\node[shape=rectangle,draw=black] (boundTest) at (0,3) {bound\_test};	
 	\node[fill = lightgray,shape=rectangle,draw=black] (gauss) at (2,3) {gauss};
 	\node[shape=rectangle,draw=black] (gaussTest) at (4,3) {gauss\_test};
-	\node[fill = lightgray,shape=rectangle,draw=black] (imKer) at (6,3) {imKer};
+	\node[fill = lightgray,shape=rectangle,draw=black] (imKer) at (6,3) {im\_ker};
 	\node[fill = lightgray,shape=rectangle,draw=black] (prep) at (8,3) {prep};
 	
-	\node[fill = lightgray,shape=rectangle,draw=black] (rowOp) at (2,5) {rowOp};
+	\node[fill = lightgray,shape=rectangle,draw=black] (row) at (2,5) {row};
 	
-	\path[->](rowOp) edge (gauss);
+	\path[->](row) edge (gauss);
 	\path[->](gauss) edge (gaussTest);
 	\path[->](bound) edge (boundTest);
 	\path[->](bound) edge (hom);
@@ -573,7 +590,7 @@ The main function in the program is \texttt{hom.betti} which can either be impor
 \begin{lstlisting}[language=bash]
 $ python betti.py <d> <maximal simplices> 
 \end{lstlisting}
-where \texttt{<d>} is an integer which is the dimensions of the simplicial complex and \texttt{<maximal simplices>} is a string listing the maximal simplices of the simplicial complex being investigated. A zero dimensional simplex can be represented by any symbol except blanc spaces, i.e. tab or space, but only one symbol per simplex. A higher dimensional simplex consists of combinations of zero dimensional simplices.
+where \texttt{<d>} is an integer which is the dimensions of the simplicial complex and \texttt{<maximal simplices>} is a string listing the maximal simplices of the simplicial complex being investigated. A zero dimensional simplex can be represented by any symbol except blanc spaces, i.e. tab, space, newline, ect., and the symbol chosen to indicate end of a string , but only one symbol per simplex. A higher dimensional simplex consists of combinations of zero dimensional simplices.
 
 Here is an example of how the function is used:
 \begin{lstlisting}[language=bash]
@@ -583,6 +600,21 @@ $ python betti.py 2 '123 24 34 5'
 
 \section{Description of the implementation}
 As just mentioned the primary function in the program is the \texttt{hom.betti} function. It is the one that calculates the Betti-vector of the d dimensional simplicial complex where \texttt{hom.betti} is given the integer d as first argument and a string containing the maximal simplices as second argument. The limitations to the naming of the simplices can be found in the previous section. 
+
+As can be seen from figure \ref{fig:program_structure} \texttt{hom.betti} uses the functions in the files \texttt{bound}, \texttt{gauss}, \texttt{im\_ker} and \texttt{prep}. They are \texttt{bound.boundary}, \texttt{gauss.elimination}, \texttt{im\_ker.dim} and \texttt{prep.prepare}. \texttt{gauss.elimination} calls the functions of \texttt{row} which are \texttt{row.swap}, \texttt{row.scale} and \texttt{row.combine}.
+
+I will now go through all the functions to describe how they work.
+
+\begin{description}
+\item[\texttt{hom.betti(d,<maximal simplices>)}] calculates the Betti-vector of the d dimensional simplicial complex with the given maximal simplices.
+\item[\texttt{bound.boundary(a,b)}]creates the boundary matrix from a to b, given as lists of strings, which is the coefficients of the boundary functions: $\partial(e_{\sigma}) = \sum_i((-1)^{index(i)}e_{\sigma\setminus i})$.
+\item[\texttt{gauss.elimination}] 
+\item[\texttt{im\_ker.dim}] 
+\item[\texttt{prep.prepare}] 
+\item[\texttt{row.swap}] 
+\item[\texttt{row.scale}] 
+\item[\texttt{row.combine}] 
+\end{description}
 
 
 \newpage
@@ -602,11 +634,11 @@ Herbert Edelsbrunner, \emph{A Short Course in Computational Geometry and Topolog
 
 \appendix
 \chapter{Linear Algebra}
-In this section some of the linear algebra theory that is used when homology groups are calculated. This section is primarily based on Niels V. Pedersens book \emph{Lineær Algebra}\cite{LinAlg}
+In this section some of the linear algebra theory that is used when homology groups are calculated. This section is primarily based on Niels V. Pedersens book \emph{Lineær Algebra} \cite{LinAlg}.
 \section{Vector Spaces, Subspaces and Quotient Spaces}
-Let $V$ be a set and $\mathbb{F}$ a field. For $V$ to be a vector field over $\mathbb{F}$ two operations namely scalar product and sum must be defined which live up to 8 rules as described by Pedersen \cite[pp. 85-86]{LinAlg}. It is included here for completeness.
+Let $V$ be a set, and $k$ a field. For $V$ to be a vector field over $k$ two operations, namely scalar product and sum, must be defined which live up to 8 rules as described by Pedersen \cite[pp. 85-86]{LinAlg}. It is included here for completeness.
 \begin{mydef} 
-Let $V$ be a set and $\mathbb{F}$ a field. $V$ is a vector space over $\mathbb{F}$ if for $x,y\in V$ and $\lambda\in\mathbb{F}$ the scalar product $\lambda x\in V$ and the vector sum $x+y\in V$ and for arbitrary vectors $x,y,z\in V$ and scalars $\lambda,\mu\in\mathbb{F}$ the following rules are fulfilled:
+Let $V$ be a set and $k$ a field. $V$ is a vector space over $k$ if for $x,y\in V$ and $\lambda\in k$ the scalar product $\lambda x\in V$ and the vector sum $x+y\in V$ and for arbitrary vectors $x,y,z\in V$ and scalars $\lambda,\mu\in k$ the following rules are fulfilled:
 \begin{enumerate}
 \item $(x+y)+z = x+(y+z)$
 \item $x+0=x$
@@ -622,18 +654,18 @@ Having a vector space $V$ it is possible to define a subspace $U$ of $V$.\cite[p
 \begin{mydef}
 A non-empty subset $U\subset V$ is called a subspace if the following conditions holds
 \begin{enumerate}
-\item if $x\in U$ and $\lambda\in\mathbb{F}$ then $\lambda x\in U$
+\item if $x\in U$ and $\lambda\in k$ then $\lambda x\in U$
 \item if $x,y\in U$ then $x+y\in U$
 \end{enumerate} 
 \end{mydef}
 Now it is time to define a quotient space. In order to do that an equivalence relation is needed. 
 
-Let $V$ be a vector space over a field $\mathbb{F}$ and $U\subset V$. We say $a\sim b$ if and only if $a-b\in U$. It is clear that all elements of $U$ are equivalent.
+Let $V$ be a vector space over a field $k$ and $U\subset V$. We say $a\sim b$ if and only if $a-b\in U$. It is clear that all elements of $U$ are equivalent.
 This equivalence relation gives rise to a set of equivalence classes $[x]=\{x+u,u\in U\}$
 The quotient space $V/\sim = V/U$ is then defined as this set of equivalence classes over $V$ by $\sim$.
 One can define scalar multiplication and addition on the quotient space in the following way. \cite{wikiQuo}
 \begin{itemize}
-\item $\lambda[x]=[\lambda x]$, for all $\lambda\in\mathbb{F}$
+\item $\lambda[x]=[\lambda x]$, for all $\lambda\in k$
 \item $[x]+[y]=[x+y]$
 \end{itemize}
 To see that the first definition is well defined let $x'\in[x]$ be arbitrarily chosen. Then $x'$ can be written as $x'=x+u$ for some $u\in U$ and 
@@ -650,23 +682,23 @@ since $u+u'\in U$ by the definition of a subspace.
 
 
 \section{The Rank-Nullity Theorem}
-The Rank-Nullity Theorem is used throughout the entire project, since it is an easy way to calculate the dimensions of the kernel of mappings such as the boundary maps. The theorem is as follows\cite[p. 109]{LinAlg}: 
+The Rank-Nullity Theorem is used throughout the entire project, since it is an easy way to calculate the dimensions of the kernel of mappings such as the boundary maps. The theorem is as follows \cite[p. 109]{LinAlg}: 
 \begin{mythm}\label{thm:rank_nullity}
 Let $f:U\to V$ be a linear mapping then the following holds
 \begin{equation*}
-\textnormal{rk}f+\textnormal{dim}(\textnormal{ker})=\textnormal{dim}U
+\textnormal{rk}f+\dim(\ker)=\dim U
 \end{equation*}
 \end{mythm}
 
 To finish of this section, remember that the rank of a linear map does not change when one does row reductions on it.
 
-\chapter{Source Code}
+\chapter{Source Code}\label{ch:source_code}
 In this appendix all the code made during the project can be found.
-\lstinputlisting{../code/rowOp.py}
+\lstinputlisting{../code/row.py}
 \lstinputlisting{../code/gauss.py}
 \lstinputlisting{../code/gauss_test.py}
 \lstinputlisting{../code/prep.py}
-\lstinputlisting{../code/imKer.py}
+\lstinputlisting{../code/im_ker.py}
 \lstinputlisting{../code/bound.py}
 \lstinputlisting{../code/bound_test.py}
 \lstinputlisting{../code/hom.py}
