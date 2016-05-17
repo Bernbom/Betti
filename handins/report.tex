@@ -586,7 +586,7 @@ The algorithm to calculate Betti-vectors have been implemented in python as a pa
 Figure \ref{fig:program_structure} shows how the different files in the implementation call one another. 
 
 \section{How to call the program}
-The main function in the program is \texttt{hom.betti} which can either be imported into a python source file and be run from there or one can call the file \texttt{betti.py} from the command line as follows:
+The main function in the program is \texttt{hom.betti} which can either be imported into a python source file and be run from there or one can call the file \texttt{betti.py} from the terminal as follows:
 \begin{lstlisting}[language=bash]
 $ python betti.py <d> <maximal simplices> 
 \end{lstlisting}
@@ -601,7 +601,7 @@ $ python betti.py 2 '123 24 34 5'
 \section{Description of the implementation}
 As just mentioned the primary function in the program is the \texttt{hom.betti} function. It is the one that calculates the Betti-vector of the d dimensional simplicial complex where \texttt{hom.betti} is given the integer d as first argument and a string containing the maximal simplices as second argument. The limitations to the naming of the simplices can be found in the previous section. 
 
-As can be seen from figure \ref{fig:program_structure} \texttt{hom.betti} uses the functions in the files \texttt{bound}, \texttt{gauss}, \texttt{im\_ker} and \texttt{prep}. They are \texttt{bound.boundary}, \texttt{gauss.elimination}, \texttt{im\_ker.dim} and \texttt{prep.prepare}. \texttt{gauss.elimination} calls the functions of \texttt{row} which are \texttt{row.swap}, \texttt{row.scale} and \texttt{row.combine}.
+As can be seen from figure \ref{fig:program_structure} \texttt{hom.betti} uses the functions in the files \texttt{bound.py}, \texttt{gauss.py}, \texttt{im\_ker.py} and \texttt{prep.py}. They are \texttt{bound.boundary}, \texttt{gauss.elimination}, \texttt{im\_ker.dim} and \texttt{prep.prepare}. \texttt{gauss.elimination} calls the functions of \texttt{row} which are \texttt{row.swap}, \texttt{row.scale} and \texttt{row.combine}.
 
 I will now go through all the functions to describe how they work.
 
@@ -617,6 +617,15 @@ I will now go through all the functions to describe how they work.
 \end{description}
 
 \section{Tests}
+As shown in figure \ref{fig:program_structure} there are 3 files which tests the implementation of the program. These are \texttt{hom\_test.py}, \texttt{gauss\_test.py} and \texttt{bound\_test.py}. With the primary being test\texttt{hom\_test.py} . It tests whether the entire implementation returns the correct Betti-vector on a given simplicial complex. It has 7 test cases testing both simplicial comlexes of 2 and 3 dimensions, simplicial complexes given in diffenrent orders and the two corner cases of an empty simplicial complex and a simplicial complex containing only a 0-simplex. 
+
+The two other files containing tests, \texttt{gauss\_test.py} and \texttt{bound\_test.py}, tests the implementation of the two most complicated subfunctions of the program. The rest of the implementation has been tested using manual testing during the development. 
+
+The three files containing tests have been made using the unittest Python module. They can be called from the terminal as follows:
+\begin{lstlisting}[language=bash]
+$ python <test file name>
+\end{lstlisting}
+
 
 \newpage
 
@@ -695,15 +704,17 @@ To finish of this section, remember that the rank of a linear map does not chang
 
 \chapter{Source Code}\label{ch:source_code}
 In this appendix all the code made during the project can be found.
+\section{The program}
 \lstinputlisting{../code/row.py}
 \lstinputlisting{../code/gauss.py}
-\lstinputlisting{../code/gauss_test.py}
 \lstinputlisting{../code/prep.py}
 \lstinputlisting{../code/im_ker.py}
 \lstinputlisting{../code/bound.py}
-\lstinputlisting{../code/bound_test.py}
 \lstinputlisting{../code/hom.py}
-\lstinputlisting{../code/hom_test.py}
 \lstinputlisting{../code/betti.py}
+\section{The tests}
+\lstinputlisting{../code/hom_test.py}
+\lstinputlisting{../code/gauss_test.py}
+\lstinputlisting{../code/bound_test.py}
 
 \end{document}

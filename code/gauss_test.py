@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 import gauss
 
-class TriTest(unittest.TestCase):
+class TestGauss(unittest.TestCase):
 
     def test_big_matrix(self):
         A = np.matrix([[ -1, -1, -1, 0, 0, 0, 0, 0 ],

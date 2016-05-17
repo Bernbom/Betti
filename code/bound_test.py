@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 import bound
 
-class Testbound(unittest.TestCase):
+class TestBound(unittest.TestCase):
 
     def test_partial_0(self):
         self.assertTrue((bound.boundary(['1', '2', '3'] ,[])==np.matrix('1 1 1')).all)
