@@ -6,6 +6,8 @@ def boundary(a,b):
     which is the coefficient of the 
     boundary functions: d_i(e_sigma) = sum((-1)**(index(i))e_sigma\i,i)
     """
+    a = sl2ll(a)
+    b = sl2ll(b)
     numRow = len(b)
     numCol = len(a)
     if numRow ==0:
@@ -28,5 +30,13 @@ def boundary(a,b):
                     temp = b.index(tempStr)
                     B[temp,j]=(-1)**i
                 except ValueError:
-                    raise ValueError('inputs does not match: a=%s , b=%s' %(' '.join(a), ' '.join(b)))
+                    raise ValueError('inputs does not match: a=%s , b=%s' 
+                        %(' '.join(map(str,a)), ' '.join(map(str,b))))
     return B
+
+def sl2ll(a):
+    """
+    transforms a list of faces given as strings to a list of faces given as 
+    lists 
+    """
+    return list(map(lambda s: s.split(','),a))
