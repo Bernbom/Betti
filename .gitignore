@@ -2,6 +2,7 @@
 
 *.pdf
 /_TODO_
+/test
 *.aux
 *.log
 *.out
