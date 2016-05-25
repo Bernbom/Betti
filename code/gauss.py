@@ -1,9 +1,10 @@
-import numpy as np
+#import numpy as np
+from scipy.sparse import dok_matrix
 import row
 
 def elimination(A):
     """
-    Given a matrix returns the gauss eliminated matrix
+    Given a sparse dok_matrix returns the gauss eliminated sparse matrix
     """
     numRows, numCols = A.shape
     i,j = 0,0

@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.sparse as sp
 
 def boundary(a,b):
     """
@@ -11,10 +12,10 @@ def boundary(a,b):
     numRow = len(b)
     numCol = len(a)
     if numRow ==0:
-        B = np.ones((1,numCol))
+        B = sp.dok_matrix(np.ones((1,numCol)))
     else:
         # make matrix
-        B = np.zeros((numRow,numCol))
+        B = sp.dok_matrix((numRow,numCol))
         # insert 1's and -1's for the boundary
         for j in range(numCol):
             for i in range(len(a[j])):
