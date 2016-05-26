@@ -17,20 +17,20 @@ def betti(d,simCom):
     bound = range(n-1)
     # find the faces of the simplex and sort them into lengths
     faces = prep.prepare(simCom)
-    print "prepared!"
+    print "Done preparing simplexes"
     i = map(lambda face : len(face.split(',')),faces)
     for k in range(n):
         f[k] = [faces[x] for x in range(len(i)) if i[x] == k]
         f[k].sort()
     # find the boundary maps and the dimentions of the image and kernel of the 
     # maps
-    print "ready for boundary matrices!"
+    print "Ready for boundary matrices"
     for k in range(n-1):
-        print 'k='+str(k)
+        print 'Making boundary matrix '+str(k)
         bound[k] = b.boundary(f[k+1],f[k])
-        print "gauss eliminating!"
+        print "Gauss eliminating!"
         bound[k] = gauss.elimination(bound[k])
-    print "calculating dimensions!"
+    print "Calculating dimensions!"
     dims = [(0,1)]+map(im_ker.dims,bound)+[(0,0)] 
     # calculate the homology groups
     for k in range(n):

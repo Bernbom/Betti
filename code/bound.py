@@ -15,10 +15,10 @@ def boundary(a,b):
         B = sp.dok_matrix(np.ones((1,numCol)))
     else:
         # make matrix
-        B = sp.dok_matrix((numRow,numCol))
+        B = sp.dok_matrix((numRow,numCol),dtype =np.int8)
         # insert 1's and -1's for the boundary
-        for j in range(numCol):
-            for i in range(len(a[j])):
+        for j in xrange(numCol):
+            for i in xrange(len(a[j])):
                 # figure out the e_sigma\i
                 if i == 0:
                     tempStr = a[j][i+1:]

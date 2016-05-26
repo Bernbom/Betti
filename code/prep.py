@@ -9,15 +9,11 @@ def prepare(simCom):
     s = set([])
     for i in xrange(len(simCom)):
         simCom[i] = simCom[i].split(',')
-
-    print "ready for combinations!"
+    # make simplexes
     for sim in simCom:
         for l in range(1,len(sim)+1):
             s.update(it.combinations(iter(sim),l))
-    print "done with combinations"    
-    s = list(s) #test
-    print "The data is now a list. Next step might take a while"
+    s = list(s)
     s = map(list,s)
-    print "ready to join"
     s = map(','.join,s)
     return s
