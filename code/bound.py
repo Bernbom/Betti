@@ -8,14 +8,16 @@ def boundary(a,b):
     boundary functions: d_i(e_sigma) = sum((-1)**(index(i))e_sigma\i,i)
     """
     a = sl2ll(a)
-    b = sl2ll(b)
+#    b = sl2ll(b)
+    b = {tuple(e): i
+         for i, e in enumerate(sl2ll(b))}
     numRow = len(b)
     numCol = len(a)
     if numRow ==0:
-        B = sp.dok_matrix(np.ones((1,numCol)))
+        B = sp.lil_matrix(np.ones((1,numCol)))
     else:
         # make matrix
-        B = sp.dok_matrix((numRow,numCol),dtype =np.int8)
+        B = sp.lil_matrix((numRow,numCol),dtype =np.int8)
         # insert 1's and -1's for the boundary
         for j in xrange(numCol):
             for i in xrange(len(a[j])):
@@ -28,7 +30,8 @@ def boundary(a,b):
                     tempStr = a[j][0:i]+a[j][i+1:]
                 try:
                     # find e_sigma\j in b and calculate the sign for it
-                    temp = b.index(tempStr)
+                    temp = b[tuple(tempStr)]
+                    #temp = b.index(tempStr)
                     B[temp,j]=(-1)**i
                 except ValueError:
                     raise ValueError('inputs does not match: a=%s , b=%s' 
