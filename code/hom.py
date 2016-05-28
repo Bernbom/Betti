@@ -24,14 +24,16 @@ def betti(d,simCom):
         f[k].sort()
     # find the boundary maps and the dimentions of the image and kernel of the 
     # maps
+    dims = [(0,1)] # test
     print "Ready for boundary matrices"
     for k in range(n-1):
         print 'Making boundary matrix '+str(k)
-        bound[k] = b.boundary(f[k+1],f[k])
+        bound = b.boundary(f[k+1],f[k])
         print "Gauss eliminating!"
-        bound[k] = gauss.elimination(bound[k])
-    print "Calculating dimensions!"
-    dims = [(0,1)]+map(im_ker.dims,bound)+[(0,0)] 
+        bound = gauss.elimination(bound[k])
+        print "Calculating dimensions!"
+        dims.append(im_ker.dims(bound))
+    dims.append((0,0))
     # calculate the homology groups
     for k in range(n):
         H[k] = dims[k][1]-dims[k+1][0]
