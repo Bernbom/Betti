@@ -30,7 +30,7 @@ def betti(d,simCom):
         print 'Making boundary matrix '+str(k)
         bound = b.boundary(f[k+1],f[k])
         print "Gauss eliminating!"
-        bound = gauss.elimination(bound[k])
+        bound = gauss.elimination(bound)
         print "Calculating dimensions!"
         dims.append(im_ker.dims(bound))
     dims.append((0,0))
