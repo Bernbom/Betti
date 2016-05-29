@@ -14,7 +14,6 @@ def betti(d,simCom):
     n = d+2
     f =range(n)
     H = range(n)
-    bound = range(n-1)
     # find the faces of the simplex and sort them into lengths
     faces = prep.prepare(simCom)
     print "Done preparing simplexes"
