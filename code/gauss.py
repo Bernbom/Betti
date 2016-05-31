@@ -7,9 +7,9 @@ def elimination(A):
     """
     Given a sparse dok_matrix returns the gauss eliminated sparse matrix
     """
-    numRows, numCols = A.shape
+    numrows, numcols = A.shape
     row,col = 0,0
-    while col < numCols and row < numRows:
+    while col < numcols and row < numrows:
         if col%10==0:
             print str(col) + " " + datetime.datetime.strftime(datetime.datetime.now(), '%H:%M:%S')
         nonzero_relative_col = A.getcol(col)[row:,:].nonzero()[0]
