@@ -7,14 +7,15 @@ def boundary(a,b):
     which is the coefficient of the 
     boundary functions: d_i(e_sigma) = sum((-1)**(index(i))e_sigma\i,i)
     """
-    a = sl2ll(a)
-#    b = sl2ll(b)
-    b = {tuple(e): i
-         for i, e in enumerate(sl2ll(b))}
     numRow = len(b)
     numCol = len(a)
+    # make a a list of lists and b a dictionary with faces as keys and 
+    # index in b as values
+    a = map(lambda s: s.split(','),a)
+    b = {tuple(e): i
+         for i, e in enumerate(map(lambda s: s.split(','),b))}
     if numRow ==0:
-        B = sp.lil_matrix(np.ones((1,numCol)))
+        B = sp.lil_matrix(np.ones((1,numCol)),dtype=np.int8)
     else:
         # make matrix
         B = sp.lil_matrix((numRow,numCol),dtype =np.int8)
@@ -31,16 +32,8 @@ def boundary(a,b):
                 try:
                     # find e_sigma\j in b and calculate the sign for it
                     temp = b[tuple(tempStr)]
-                    #temp = b.index(tempStr)
                     B[temp,j]=(-1)**i
                 except ValueError:
                     raise ValueError('inputs does not match: a=%s , b=%s' 
                         %(' '.join(map(str,a)), ' '.join(map(str,b))))
     return B
-
-def sl2ll(a):
-    """
-    transforms a list of faces given as strings to a list of faces given as 
-    lists 
-    """
-    return list(map(lambda s: s.split(','),a))
