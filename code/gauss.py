@@ -1,6 +1,7 @@
 #import numpy as np
 from scipy.sparse import dok_matrix
 import row as r
+import datetime
 
 def elimination(A):
     """
@@ -9,6 +10,8 @@ def elimination(A):
     numRows, numCols = A.shape
     row,col = 0,0
     while col < numCols and row < numRows:
+        if col%10==0:
+            print str(col) + " " + datetime.datetime.strftime(datetime.datetime.now(), '%H:%M:%S')
         nonzero_relative_col = A.getcol(col)[row:,:].nonzero()[0]
         if len(nonzero_relative_col)==0:
             col += 1
