@@ -25,3 +25,7 @@ def simcom_prep(off_file, target_file):
     # clean up
     in_file.close()
     out_file.close()
+
+if __name__ =="__main__":
+    simcom_prep(sys.argv[1],sys.argv[2])
+    print "success"
