@@ -88,7 +88,7 @@ The deadlines for when tasks should be done are as follows:
 \end{description}
 \newpage
 
-\chapter{Mathematical Theory}
+\chapter{Mathematical Theory} \label{ch:theory}
 In this chapter the mathematics needed to understand how to calculate homology groups is presented. For a walk through of the linear algebra needed have a look in the appendix.
 
 \section{Simplicial Complexes}
@@ -259,6 +259,23 @@ An f-vector is, like the Betti-vector, a way to present knowledge about a simpli
 \begin{equation*}
 f = (|F_{-1}|,|F_0|,\dots,|F_n|)
 \end{equation*}
+\section{The Algorithm}
+The knowledge from the previous two sections can be compressed into the following algorithm for calculating Betti-vectors:
+\begin{figure}[H]
+\begin{lstlisting}
+betti(d,simplicial_complex)
+    find the faces of the simplex and sort them into lengths
+    for i in range(d+1) # to include partial_-1
+        caluculate boundary matrix partial_i
+        perform Gaussian elimination on partial_i
+        calculate dimensions of image and kernel of partial_i
+    for i in range(  
+        H[i] = dim_ker_i - dim_im_i+1 # where dimensions are 0 if not calculated
+    return H
+\end{lstlisting}
+\caption{Algorithm to calculating Betti-vectors.}
+\label{fig:Algorithm}
+\end{figure}
 
 \chapter{Examples of Calculations of Homology Groups}
 It is time for some examples on how to calculate homology groups. The details of the calculations will be spelled out for the first example where as the rest of the examples will be explained more briefly.
@@ -443,7 +460,7 @@ Consider the simplicial complex $\Delta_2$ consisting of all the subsets of $\{1
 \caption{$\Delta_2$ consists of all subsets of $\{1,2,3\},\{1,3,4\},\{2,3,4\},\{2,5\},\{4,5\}$ and $\{6\}$}
 \label{fig:ex2}
 \end{figure}
-By observing $\Delta_2$ the following $F_i(\Delta)$ are found:
+By observing $\Delta_2$ the following sets of $i$-faces  $F_i(\Delta)$ are found:
 \begin{align*}
 F_2(\Delta) &= \{\{1,2,3\},\{1,3,4\},\{2,3,4\}\}\\
 F_1(\Delta) &= \{\{1,2\},\{1,3\},\{1,4\},\{2,3\},\{2,4\},\{2,5\},\{3,4\},\{4,5\}\}\\
@@ -551,12 +568,14 @@ The Betti-vector is then $H=(0,1,1,0)$
 When one compares the homology groups of $\Delta_1$ and $\Delta_2$ one sees that they are the same. As it is explained in the theory section this is no coincidence, since the only difference between $\Delta_1$ and $\Delta_2$ is the partitioning into simplexes the object which is split is the same.
 
 \chapter{The Implementation}
-The algorithm to calculate Betti-vectors have been implemented in python as a part of this project. The module \texttt{NumPy} have been used throughout the code for representation of matrices. The module \texttt{Itertools} have been used in the function \texttt{prep.prepare}, which takes a string of the maximum simplices of a simplicial complex and returns a list of all the simplices in the simplicial complex, to create the strings representing the simplices. The source code can be found in appendix \ref{ch:source_code}.
+As a part of this project the algorithm to calculate Betti-vectors, described in figure \ref{fig:Algorithm}, has been implemented in python as the program \texttt{Betti}. In order to use OFF files as input another program \texttt{Preproc}, which pre-processes the OFF file to a format that \texttt{Betti} can read, has been made.
 
 \begin{figure}[H]
 \center
 \begin{tikzpicture}
+	\node[fill = lightgray,shape=rectangle,draw=black] (preproc) at (0,-1) {preproc};
 	\node[fill = lightgray,shape=rectangle,draw=black] (betti) at (3,-1) {betti};
+	\node[fill = lightgray,shape=rectangle,draw=black] (bettifile) at (6,-1) {betti\_file};
 	
 	\node[fill = lightgray,shape=rectangle,draw=black] (hom) at (3,1) {hom};
 	\node[shape=rectangle,draw=black] (homTest) at (5,1) {hom\_test};
@@ -569,8 +588,10 @@ The algorithm to calculate Betti-vectors have been implemented in python as a pa
 	\node[fill = lightgray,shape=rectangle,draw=black] (prep) at (8,3) {prep};
 	
 	\node[fill = lightgray,shape=rectangle,draw=black] (row) at (2,5) {row};
+	\node[shape=rectangle,draw=black] (rowTest) at (4,5) {row\_test};	
 	
 	\path[->](row) edge (gauss);
+	\path[->](row) edge (rowTest);
 	\path[->](gauss) edge (gaussTest);
 	\path[->](bound) edge (boundTest);
 	\path[->](bound) edge (hom);
@@ -578,54 +599,111 @@ The algorithm to calculate Betti-vectors have been implemented in python as a pa
 	\path[->](imKer) edge (hom);
 	\path[->](prep) edge (hom);
 	\path[->](hom) edge (betti);
+	\path[->](hom) edge (bettifile);
 	\path[->](hom) edge (homTest);
 \end{tikzpicture}
-\caption{The structure of the implementation}
+\caption{The call structure of the programs}
 \label{fig:program_structure}
 \end{figure}
 Figure \ref{fig:program_structure} shows how the different files in the implementation call one another. 
 
-\section{How to call the program}
-The main function in the program is \texttt{hom.betti} which can either be imported into a python source file and be run from there or one can call the file \texttt{betti.py} from the terminal as follows:
-\begin{lstlisting}[language=bash]
-$ python betti.py <d> <maximal simplices> 
-\end{lstlisting}
-where \texttt{<d>} is an integer which is the dimensions of the simplicial complex and \texttt{<maximal simplices>} is a string listing the maximal simplices of the simplicial complex being investigated. A zero dimensional simplex can be represented by any symbol except blanc spaces, i.e. tab, space, newline, ect., and the symbol chosen to indicate end of a string , but only one symbol per simplex. A higher dimensional simplex consists of combinations of zero dimensional simplices.
+\section{Dependencies}
+\texttt{Betti} and \texttt{Preproc} was made on a computer running Ubuntu 16.04 LTS with 4 GB RAM running Python 2.7.11+ with SciPy version 0.17.0 and NumPy version 1.11.0. Further more the SciPy submodule scipy.sparse has been used through out \texttt{Betti}.
 
-Here is an example of how the function is used:
+The programs have been tested on a computer running Ubuntu 14.04 LTS with 16 GB RAM running Python 2.7.6 with SciPy version 0.17.1 and NumPy version 1.8.2.
+
+\section{How to call the program} \label{ch:how2call}
+The main function in \texttt{Betti} is \texttt{hom.betti} which can either be imported into a python source file and be run from there or one can call the file \texttt{betti.py} from the terminal as in figure \ref{fig:bettipseudo},
+\begin{figure}[H]
+\begin{lstlisting}[language=bash]
+$ python betti.py <d> <maximal faces> 
+\end{lstlisting}
+\caption{How to call \texttt{Betti} using \texttt{betti.py}}
+\label{fig:bettipseudo}
+\end{figure}
+where \texttt{<d>} is an integer which is the dimensions of the simplicial complex, and \texttt{<maximal faces>} is a string listing the maximal faces of the simplicial complex being investigated\footnote{Note that the string \texttt{<maximal faces>} can contain more faces than the maximal ones, but only needs the maximal ones. This is a property \texttt{betti\_file.py} takes advantage of.}. The maximal faces are reprecented as a comma-separated string. A zero dimensional face can be represented by any symbol combination except blanc spaces, i.e. tab, space, newline, ect., comma, or the symbol chosen to indicate end of a string usually ' or ". A higher dimensional face consists of combinations of zero dimensional simplices.
+
+Figure \ref{fig:betti} is an example of how the function is used:
+\begin{figure}[H]
 \begin{lstlisting}[language=bash]
 $ python betti.py 2 '1,2,3 2,4 3,4 5'
 [0,1,1,0] 
 \end{lstlisting}
+\caption{Example on how to call \texttt{Betti} using \texttt{betti.py} }
+\label{fig:betti}
+\end{figure}
+
+\texttt{Betti} can also be called by calling \texttt{betti\_file.py} from the terminal as in figure \ref{fig:bettifile}.
+\begin{figure}[H]
+\begin{lstlisting}[language=bash]
+$ python betti_file.py <d> <file containing maximal faces> 
+\end{lstlisting}
+\caption{How to call \texttt{Betti} using \texttt{betti\_file.py}}
+\label{fig:bettifile}
+\end{figure}
+Note that the second argument in figure \ref{fig:bettifile} must have the faces of the complex in one line split by spaces and each face split into zero dimensional faces by commas just as seen in figure \ref{fig:betti}. An OFF file can be made into this format using the program \texttt{Preproc} as seen in figure \ref{fig:preproc}. Note that the terminal will write "success" upon a successful run of the program.
+
+\begin{figure}[H]
+\begin{lstlisting}[language=bash]
+$ python preproc.py <OFF file> <output file> 
+\end{lstlisting}
+\caption{How to call \texttt{Preproc} from the terminal.}
+\label{fig:preproc}
+\end{figure}
 
 \section{Description of the implementation}
-As just mentioned the primary function in the program is the \texttt{hom.betti} function. It is the one that calculates the Betti-vector of the d dimensional simplicial complex where \texttt{hom.betti} is given the integer d as first argument and a string containing the maximal simplices as second argument. The limitations to the naming of the simplices can be found in the previous section. 
+As just mentioned the primary function in \texttt{Betti} is the \texttt{hom.betti} function. It is the one that calculates the Betti-vector of the \texttt{d} dimensional simplicial complex where \texttt{hom.betti} is given the integer \texttt{d} as first argument and a string containing the maximal faces as second argument. The limitations to the naming of the simplices can be found in section \ref{ch:how2call}. 
 
-As can be seen from figure \ref{fig:program_structure} \texttt{hom.betti} uses the functions in the files \texttt{bound.py}, \texttt{gauss.py}, \texttt{im\_ker.py} and \texttt{prep.py}. They are \texttt{bound.boundary}, \texttt{gauss.elimination}, \texttt{im\_ker.dim} and \texttt{prep.prepare}. \texttt{gauss.elimination} calls the functions of \texttt{row} which are \texttt{row.swap}, \texttt{row.scale} and \texttt{row.combine}.
+As can be seen from figure \ref{fig:program_structure} \texttt{hom.betti} uses the functions in the files \texttt{bound.py}, \texttt{gauss.py}, \texttt{im\_ker.py} and \texttt{prep.py}. They are \texttt{bound.boundary}, \texttt{gauss.elimination}, \texttt{im\_ker.dims} and \texttt{prep.prepare}. \texttt{gauss.elimination} calls the functions of \texttt{row} which are \texttt{row.swap}, \texttt{row.scale} and \texttt{row.combine}.
+
+\subsection{Modules used}
+The two modules \texttt{NumPy} and \texttt{SciPy} with their submodules have been used throughout the code for representation of matrices. The primary matrix reprecentation has been the sparse \texttt{lil\_matrix} in the \texttt{scipy.sparse} module but the regular matrix from \texttt{NumPy} has been used in one case to make a matrix that was then changed to a sparse matrix right away. 
+
+The module \texttt{Itertools} have been used in the function \texttt{prep.prepare}, which takes a string of the maximum simplices of a simplicial complex and returns a list of all the simplices in the simplicial complex, to create the strings representing the simplices. The source code can be found in appendix \ref{ch:source_code}.
+
+The module \texttt{sys} has been used in \texttt{betti.py}, \texttt{betti\_file.py} and \texttt{preproc.py} for making the main fuctions.
+
+\subsection{The Functions}
 
 I will now go through all the functions to describe how they work.
 
 \begin{description}
-\item[\texttt{hom.betti(d,<maximal simplices>)}] calculates the Betti-vector of the d dimensional simplicial complex with the given maximal simplices.
-\item[\texttt{bound.boundary(a,b)}]creates the boundary matrix from a to b, given as lists of strings, which is the coefficients of the boundary functions: $\partial(e_{\sigma}) = \sum_i((-1)^{index(i)}e_{\sigma\setminus i})$.
-\item[\texttt{gauss.elimination(A)}] given a matrix A returns the gauss eliminated matrix
-\item[\texttt{im\_ker.dim(A)}] given a matrix from tri(A) returns the dimensions of its image and kernel 
-\item[\texttt{prep.prepare(<maximal simplices>)}] given the maximal faces of a simplicial complex, as a string, creates a list of faces in that complex
-\item[\texttt{row.swap(A,i,j)}] in matrix A: swap row i and j. This function is necessary since NumPy does not eagerly copy data but only does it when it is explicitly told to do it.
+\item[\texttt{preproc.simcom\_prep(off\_file, target\_file)}] given an off file containing a simplicial complex returns a file containing the simplicial complex in one line in a format ready for \texttt{betti\_file.py}. 
+\item[\texttt{hom.betti(d,<maximal faces>)}] calculates the Betti-vector of the d dimensional simplicial complex with the given maximal faces.
+\item[\texttt{prep.prepare(<maximal faces>)}] given the maximal faces of a simplicial complex, as a string, creates a list of faces in that complex.
+\item[\texttt{bound.boundary(a,b)}]creates the boundary matrix from a to b, where a and b are given as lists of strings. The boundary matrix contains the coefficients of the boundary functions: $\partial(e_{\sigma}) = \sum_i((-1)^{index(i)}e_{\sigma\setminus i})$.
+\item[\texttt{gauss.elimination(A)}] given a matrix A returns the gauss eliminated matrix.
+\item[\texttt{im\_ker.dim(A)}] given a matrix from \texttt{gauss.elimination} returns the dimensions of its image and kernel.
+\item[\texttt{row.swap(A,i,j)}] in matrix A: swap row i and j. This function is necessary since SciPy does not eagerly copy data but only does it when it is explicitly told to do it.
 \item[\texttt{row.scale(A,i,n)}] in matrix A: multiply row i with n.
-\item[\texttt{row.combine(A,i,j,n)}] in matrix A: add row j to row i n times
+\item[\texttt{row.combine(A,i,j,n)}] in matrix A: add row j to row i n times.
+\end{description}
+Furthermore there are the main functions \texttt{betti.py} and \texttt{betti\_file.py} described in section \ref{ch:how2call}.
+
+\section{Optimisations}
+Some optimisations have been made in order to make it possible to run the programs with big datasets\footnote{insert definition of big}.
+\begin{description}
+\item[The Betti-vector algorithm] Instead of using the mathematical most intuitive algorithm where all the boundary marices are calculated first after which all the dimensions are calculated followed by the Betti numbers, an algorithm where only one matrix is needed at a time in the RAM has been used. This results in the program being able to handle larger inputs without running out of RAM.
+\item[Use of dictionary] Instead of making a linear index search for faces in b in \texttt{bound.boundary} a dictionary has been used to contain the faces in b, where the key is the tuple equvalent to the face and the value is the index of the face.
 \end{description}
 
 \section{Tests}
-As shown in figure \ref{fig:program_structure} there are 3 files which tests the implementation of the program. These are \texttt{hom\_test.py}, \texttt{gauss\_test.py} and \texttt{bound\_test.py}. With the primary being test\texttt{hom\_test.py} . It tests whether the entire implementation returns the correct Betti-vector on a given simplicial complex. It has 7 test cases testing both simplicial comlexes of 2 and 3 dimensions, simplicial complexes given in diffenrent orders and the two corner cases of an empty simplicial complex and a simplicial complex containing only a 0-simplex. 
+As shown in figure \ref{fig:program_structure} there are 4 files which tests the implementation of \texttt{Betti}. These are \texttt{hom\_test.py}, \texttt{gauss\_test.py}, \texttt{row\_test.py} and \texttt{bound\_test.py}. With the primary test being \texttt{hom\_test.py}. It tests whether the entire program returns the correct Betti-vector on a given simplicial complex. It has 7 test cases testing both simplicial comlexes of 2 and 3 dimensions, simplicial complexes given in diffenrent orders, simplicial complexes with long 0-face names and the two corner cases of an empty simplicial complex and a simplicial complex containing only a 0-simplex. 
 
-The two other files containing tests, \texttt{gauss\_test.py} and \texttt{bound\_test.py}, tests the implementation of the two most complicated subfunctions of the program. The rest of the implementation has been tested using manual testing during the development. 
+The two files \texttt{gauss\_test.py} and \texttt{bound\_test.py}, tests the implementation of the two second most important functions of the program.
 
-The three files containing tests have been made using the unittest Python module. They can be called from the terminal as follows:
+The file \texttt{row\_test.py} contains one test per function in \texttt{row.py} to test that the utility functions behave as expected.
+
+The rest of the implementation has been tested using manual testing during the development. 
+
+The four files containing tests have been made using the unittest Python module. They can be called from the terminal as seen in figure \ref{fig:how2test}:
+\begin{figure}
 \begin{lstlisting}[language=bash]
 $ python <test file name>
 \end{lstlisting}
-
+\caption{How to call a test.}
+\label{fig:how2test}
+\end{figure}
 
 \newpage
 
