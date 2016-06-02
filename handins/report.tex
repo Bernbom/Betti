@@ -14,6 +14,7 @@
 \usepackage{float}
 \usepackage{listings}
 \usepackage{tikz}
+\usepackage[nottoc,numbib]{tocbibind}
 
 % ---------------- Page and margin/header/footer Setup -----------------
 \pagestyle{fancy}
@@ -53,8 +54,10 @@
 \maketitle
 \thispagestyle{empty}
 \end{titlepage}
-
 \newpage
+
+\abstract{This is probably the last section to be made}
+
 \tableofcontents
 \newpage
 \section*{Introduction}
@@ -64,30 +67,9 @@ There are different types of holes. Just consider a hole in a 2-torus and compar
 
 To find the number of holes in a geometric object is not just an interesting mathematical discipline, it also has interesting practical applications. Imagine that the simplicial complexes given to the algorithm are porous stones such as limestone, then by calculating the sizes of their homology groups one can get an insight into what their surfaces are like, and there by get a better understanding of how to for example remove oil from limestone or save $CO_2$ in limestone. 
 \newpage
+\section*{Extent of the project}
 
-\section{Time Schedule}
-\begin{description}
-\item[Status so far:] I have written about simplicial complexes, homology groups and made an appendix about linear algebra. Besides from that I have written two examples on how to use the theory to calculate the Betti-vector for a simplicial complex. Furthermore, there is now a nD-version of the Betti-vector calculating software, where n is a natural number, which is currently being tested. 
-\item[remaining tasks]
-\begin{itemize}
-\item Finish testing the implementation of the Betti-vector calculator.
-\item Describe the implementation of the Betti-vector calculator
-\item Describe the tests
-\item Expand the project to either contain $\alpha$-complexes, persistent homology or an interesting dataset.
-\item Hand in the final report
-\end{itemize}
-\end{description}
-
-The deadlines for when tasks should be done are as follows:
-\begin{description}
-\item[Finish testing]April 27
-\item[Describe the tests]May 4
-\item[Describe the implementation]May 11
-\item[Expand project]June 1
-\item[Hand in final report]June 13
-\end{description}
 \newpage
-
 \chapter{Mathematical Theory} \label{ch:theory}
 In this chapter the mathematics needed to understand how to calculate homology groups is presented. For a walk through of the linear algebra needed have a look in the appendix.
 
@@ -262,7 +244,7 @@ f = (|F_{-1}|,|F_0|,\dots,|F_n|)
 \section{The Algorithm}
 The knowledge from the previous two sections can be compressed into the following algorithm for calculating Betti-vectors:
 \begin{figure}[H]
-\begin{lstlisting}
+\begin{lstlisting}[numbers=left]
 betti(d,simplicial_complex)
     find the faces of the simplex and sort them into lengths
     for i in range(d+1) # to include partial_-1
@@ -276,6 +258,7 @@ betti(d,simplicial_complex)
 \caption{Algorithm to calculating Betti-vectors.}
 \label{fig:Algorithm}
 \end{figure}
+Here I will refere to the sections where one can find the different subalgorithms.
 
 \chapter{Examples of Calculations of Homology Groups}
 It is time for some examples on how to calculate homology groups. The details of the calculations will be spelled out for the first example where as the rest of the examples will be explained more briefly.
@@ -680,12 +663,17 @@ I will now go through all the functions to describe how they work.
 \end{description}
 Furthermore there are the main functions \texttt{betti.py} and \texttt{betti\_file.py} described in section \ref{ch:how2call}.
 
-\section{Optimisations}
+\subsection{Optimisations}
 Some optimisations have been made in order to make it possible to run the programs with big datasets\footnote{insert definition of big}.
 \begin{description}
 \item[The Betti-vector algorithm] Instead of using the mathematical most intuitive algorithm where all the boundary marices are calculated first after which all the dimensions are calculated followed by the Betti numbers, an algorithm where only one matrix is needed at a time in the RAM has been used. This results in the program being able to handle larger inputs without running out of RAM.
 \item[Use of dictionary] Instead of making a linear index search for faces in b in \texttt{bound.boundary} a dictionary has been used to contain the faces in b, where the key is the tuple equvalent to the face and the value is the index of the face.
+\item[Type of matrix]
+\item[to be continued...]
 \end{description}
+\subsubsection{Unsuccessful optimisations}
+
+\subsection{Complexity analysis}
 
 \section{Tests}
 As shown in figure \ref{fig:program_structure} there are 4 files which tests the implementation of \texttt{Betti}. These are \texttt{hom\_test.py}, \texttt{gauss\_test.py}, \texttt{row\_test.py} and \texttt{bound\_test.py}. With the primary test being \texttt{hom\_test.py}. It tests whether the entire program returns the correct Betti-vector on a given simplicial complex. It has 7 test cases testing both simplicial comlexes of 2 and 3 dimensions, simplicial complexes given in diffenrent orders, simplicial complexes with long 0-face names and the two corner cases of an empty simplicial complex and a simplicial complex containing only a 0-simplex. 
@@ -705,7 +693,15 @@ $ python <test file name>
 \label{fig:how2test}
 \end{figure}
 
+\section{Test Data}
+Here I will write about the OFF files that i try to input into \texttt{Betti} and the result there of.
 \newpage
+
+\chapter{Concluding Remarks}
+
+\section{Discussion}
+
+\section{Conclusion}
 
 \begin{thebibliography}{9}
 \bibitem{Edelsbrunner}
