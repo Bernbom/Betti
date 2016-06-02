@@ -1,6 +1,3 @@
-import numpy as np
-from scipy.sparse import dok_matrix
-
 def swap(A,i,j):
     """
     in matrix A: swap row i and j
