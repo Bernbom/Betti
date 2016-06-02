@@ -3,9 +3,9 @@ import scipy.sparse as sp
 
 def boundary(a,b):
     """
-    creates the boundary matrix from a to b, given as lists of strings,
-    which is the coefficient of the 
-    boundary functions: d_i(e_sigma) = sum((-1)**(index(i))e_sigma\i,i)
+    creates the boundary matrix from a to b, where a and b are given as lists 
+    of strings. The boundary matrix contains the coefficients of the boundary 
+    functions: d_i(e_sigma) = sum((-1)**(index(i))e_sigma\i,i)
     """
     numrow = len(b)
     numcol = len(a)
