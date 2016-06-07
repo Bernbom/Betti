@@ -7,8 +7,6 @@ def dims(A):
     of its image and kernel
     """
     row, col = A.nonzero()
-    imDim = len(set(row))
-#    z = np.zeros(A.shape[1])
-#    imDim = [np.all(A[i,:]==z) for i in range(A.shape[0])].count(False)
-    kerDim = A.shape[1]-imDim
-    return imDim, kerDim
+    im_dim = len(set(row))
+    ker_dim = A.shape[1]-imDim
+    return im_dim, ker_dim

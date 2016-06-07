@@ -9,7 +9,7 @@ def prepare(simCom):
     s = set([])
     for i in xrange(len(simCom)):
         simCom[i] = simCom[i].split(',')
-    # make simplexes
+    # make faces
     for sim in simCom:
         for l in range(1,len(sim)+1):
             s.update(it.combinations(iter(sim),l))

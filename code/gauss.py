@@ -10,7 +10,7 @@ def elimination(A):
     numrows, numcols = A.shape
     row,col = 0,0
     while col < numcols and row < numrows:
-        if col%10==0:
+        if col%10==0: # reports back far the program has come
             print str(col) + " " + datetime.datetime.strftime(datetime.datetime.now(), '%H:%M:%S')
         nonzero_relative_col = A.getcol(col)[row:,:].nonzero()[0]
         if len(nonzero_relative_col)==0:
