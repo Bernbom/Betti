@@ -69,18 +69,18 @@ To find the number of holes in a geometric object is not just an interesting mat
 
 The reader of this report is expected to have a foundation in linear algebra, which can be brushed up in appendix \ref{ch:linalg}. It is also advisable to have an interest in topology.
 
-Note that Gaussian elimination of big martices within reasonable time is an open problem, that I have decided is outside the scope of this project.
+Note that Gaussian elimination of big martices within reasonable time is an open problem, that I have decided to be outside the scope of this project.
 \newpage
 \section*{Workflow}
 This project consists of three parts: the first being understanding simplicial homology theory, the second being to translate this theory into an algorithm which can be run on a computer, and lastly to implement this algorithm in \texttt{Python} and improve on it such that it can run on as large simplicial complexes as possible.
 
-For the first part I read approximately half of \emph{A Short Course in Computational Geometry and Topology} by Herbert Edelsbrunner\cite{Edelsbrunner}. I did this because it seemed manageable to read a book. When I got stuck in Edelsbrunner I read some articles of which I found \emph{An Introduction to Homology} by Prerna Nadathur \cite{Nadathur} the easiest to read. For a full list of sources please look at the bibliography.
+For the first part I read approximately half of \emph{A Short Course in Computational Geometry and Topology} by Herbert Edelsbrunner\cite{Edelsbrunner}. I did this because it seemed manageable to read a book. When I got stuck in Edelsbrunner I read some articles of which I found \emph{An Introduction to Homology} by Prerna Nadathur \cite{Nadathur} the easiest to access. For a full list of sources please look at the bibliography.
 
-I combined the theory into the text of chapter \ref{ch:theory} where I also introduced a homemade proof of one of the central theorems of the theory (theorem \ref{thm:boundary} in this report) and a definition of a Betti-vector.
+I combined the theory into the text of chapter \ref{ch:theory} where I also introduced a homemade proof of one of the central theorems of the theory (theorem \ref{thm:boundary} in this report), a definition of a Betti-vector and a definition of n-simplices.
 
-The second part is based on two blogposts by Jeremy Kun \cite{KunPrimer}\cite{Kun} but the algorithm presented in this report has been expanded and changed to fit with the API I have defined.
+The second part is based on two blogposts by Jeremy Kun \cite{KunPrimer}\cite{Kun} but I have expanded and changed the algorithm presented in this report to fit with the API I have defined.
 
-The third part has been preformed as an iterative process, where I first implemented a relatively naive algoritm that was somewhat mathematical in its structure. This implementation was improved several times by use of more fitting datastructures, consideration of memory and minimisation of work. During this process I found that Gaussian elimination of big martices within reasonable time is an open problem, that I have decided is outside the scope of this project.
+The third part I have preformed as an iterative process, where I first implemented a relatively naive algoritm which was somewhat mathematical in its structure. This implementation was improved several times; by use of more fitting datastructures, consideration of memory consumption and minimisation of workload. During this process I found that Gaussian elimination of big martices within reasonable time is an open problem, which I have decided to be outside the scope of this project.
 
 \chapter{Mathematical Theory} \label{ch:theory}
 In this chapter the mathematics needed to understand how to calculate homology groups is presented. For a walk through of the linear algebra needed have a look in the appendix.
@@ -629,7 +629,7 @@ As a part of this project the algorithm to calculate Betti-vectors, described in
 \end{figure}
 Figure \ref{fig:program_structure} shows how the different files in the implementation call one another. 
 
-\section{Dependencies}
+\section{Dependencies}\label{ch:dependencies}
 \texttt{Betti} and \texttt{Preproc} was made on a computer running Ubuntu 16.04 LTS with 4 GB RAM running Python 2.7.11+ with SciPy version 0.17.0 and NumPy version 1.11.0. Further more the SciPy submodule scipy.sparse has been used through out \texttt{Betti}.
 
 The programs have been tested on a computer running Ubuntu 14.04 LTS with 16 GB RAM running Python 2.7.6 with SciPy version 0.17.1 and NumPy version 1.8.2.
@@ -703,7 +703,7 @@ I will now go through all the functions to describe how they work.
 Furthermore there are the main functions \texttt{betti.py} and \texttt{betti\_file.py} described in section \ref{ch:how2call}.
 
 \subsection{Optimisations}
-Some optimisations have been made in order to make it possible to run the programs with big datasets\footnote{insert definition of big}.
+Some optimisations have been made in order to make it possible to run the programs with big datasets\footnote{more than a million nodes if one ignores the Gaussian elimination.}.
 \begin{description}
 \item[The Betti algorithm] Instead of using the mathematical most intuitive algorithm where all the boundary marices are calculated first after which all the dimensions are calculated followed by the Betti numbers, an algorithm where only one matrix is needed at a time in the RAM has been used. This results in the program being able to handle larger inputs without running out of RAM.
 \item[Type of matrices] Another way of minimising the use of memory in the program is to use a sparse matrix representation, which only represent the non-zero entries of the matrices and ignores the zero entries. In this version of the program the build in \texttt{SciPy} sparse matrix representation \texttt{lil\_matrix} has been used. An argument for this choice is presented in the discussion.
@@ -715,8 +715,15 @@ Some optimisations have been made in order to make it possible to run the progra
 \item[Finding the dimensions of image and kernel] When finding the dimensions of the image and kernel \texttt{im\_ker.dims} makes use of the build in \texttt{lil\_matrix} method \texttt{nonzero}. This is opposed to counting the non-zero rows manualy.
 \end{description}
 \subsubsection{Unsuccessful optimisations}
-There are also some optimisations that did not work. These are optimisations that tried to avoid using Gaussian elimination
+There are also some optimisations that did not work. These are optimisations that tried to avoid using Gaussian elimination. This was done due to the fact that Gaussian elimination has a known worst case runtime of $O(n^3)$ and after all the other optimisations the Gaussian elimination was clearly the slowest section of the algorithm.
+
+Common for the methods experimented with are that they try to estimate the rank of the boundary matrices instead of calculating the exact rank. This turned out to be a bad idea, since all the tests ended up failing with the estimating methods by giving the wrong results and when the methods were tried on the bigest dataset described in section \ref{ch:test_data} the result was a memory error. 
+
+The methods experimented with were LU decomposition, SVD, QR and a build in \texttt{SciPy} method called \texttt{estimate\_rank}.
+
+My best guess to why the methods gave the wrong result is that the boundary matrices are rank deficient which I have found sources for that at least SVD \cite{wikiSVD} has problems with that kind of matrices. Furthere more the boundary matrices contain only $-1$'s, 0's and 1's in the beginning, and since the mentioned methods are iterative I can imagine some problems with numbers so close to one another.
 \subsection{Complexity analysis}
+
 
 \section{Tests}
 As shown in figure \ref{fig:program_structure} there are 4 files which tests the implementation of \texttt{Betti}. These are \texttt{hom\_test.py}, \texttt{bound\_test.py}, \texttt{gauss\_test.py} and \texttt{row\_test.py}. With the primary test being \texttt{hom\_test.py}. It tests whether the entire program returns the correct Betti-vector on a given simplicial complex. It has 7 test cases testing both simplicial comlexes of 2 and 3 dimensions, simplicial complexes given in diffenrent orders, simplicial complexes with long 0-face names and the two corner cases of an empty simplicial complex and a simplicial complex containing only a 0-simplex. 
@@ -728,7 +735,7 @@ The file \texttt{row\_test.py} contains one test per function in \texttt{row.py}
 The rest of the implementation has been tested using manual testing during the development. 
 
 The four files containing tests have been made using the unittest Python module. They can be called from the terminal as seen in figure \ref{fig:how2test}:
-\begin{figure}
+\begin{figure}[H]
 \begin{lstlisting}[language=bash]
 $ python <test file name>
 \end{lstlisting}
@@ -736,10 +743,27 @@ $ python <test file name>
 \label{fig:how2test}
 \end{figure}
 
-\section{Test Data}
-Here I will write about the OFF files that i try to input into \texttt{Betti} and the result there of.
-\newpage
+\section{Test Data}\label{ch:test_data}
+\texttt{Betti} has run on 3 different data sets of different sizes with varied success. 
+All the data sets are 3D network structures of some biological data to which voluminous meshs described by OFF files have been fittet. 
+\begin{figure}[H]
+\includegraphics[scale=0.5]{downsampled00.png}
+\caption{The biggest dataset}
+\label{fig:mesh_down}
+\end{figure}
+The first dataset, see figure \ref{fig:mesh_down} is a mesh with 1088346 nodes. Based on it taking 5 minutes for \texttt{Betti} to calculate 1 columns in the second Gaussian elimination I guess it will take approximately a year for \texttt{Betti} to run the data. When one ignores the Gaussian elimination it takes 10-15 minutes for \texttt{Betti} to run the data set on the big computer described in section \ref{ch:dependencies}. There are no problems with the memory, as long as it is run on the mentioned conputer. On the smaller computer it takes a lot longer to run the program and it runs out of memory before it is done.
 
+\begin{figure}[H]
+\includegraphics[scale=0.5]{testmesh2d00.png}
+\caption{The second biggest dataset}
+\label{fig:mesh_2d}
+\end{figure}
+
+\begin{figure}[H]
+\includegraphics[scale=0.5]{testmesh00.png}
+\caption{The smallest dataset}
+\label{fig:mesh_}
+\end{figure}
 \chapter{Concluding Remarks}
 
 \section{Discussion}
@@ -747,16 +771,18 @@ Here I will write about the OFF files that i try to input into \texttt{Betti} an
 \section{Conclusion}
 
 \begin{thebibliography}{9}
+
+\bibitem{Allgaier} Allgaier et al., \emph{Homology of Simplicial Complexes}, 2004
 \bibitem{Edelsbrunner}
 Herbert Edelsbrunner, \emph{A Short Course in Computational Geometry and Topology}, Springer, 2014
-\bibitem{Allgaier} Allgaier et al., \emph{Homology of Simplicial Complexes}, 2004
-\bibitem{Nadathur} Prerna Nadathur, \emph{An Introduction to Homology}, August 16, 2007
+\bibitem{Jonsson} Jakob Jonsson, \emph{Introduction to simplicial homology}, February 3, 2011
 \bibitem{KunPrimer} Jeremy Kun, \emph{Homology Theory a Primer}, \url{http://jeremykun.com/2013/04/03/homology-theory-a-primer/}
 \bibitem{Kun} Jeremy Kun, \emph{Computing Homology}, \url{http://jeremykun.com/2013/04/10/computing-homology/}
+\bibitem{Nadathur} Prerna Nadathur, \emph{An Introduction to Homology}, August 16, 2007
 \bibitem{LinAlg} Niels V. Pedersen, \emph{Liniær Algebra}, 2nd edition, Københavns Universitet Matematisk Afdeling, 2009
-\bibitem{wikiQuo} unknown, \emph{Quotient Space (linear algebra)}, Wikipedia, March 25 2016
-\bibitem{wikiBetti} unknown, \emph{Betti Numbers}, Wikipedia, March 29 2016
-\bibitem{Jonsson} Jakob Jonsson, \emph{Introduction to simplicial homology}, February 3, 2011
+\bibitem{wikiQuo} unknown, \emph{Quotient Space (linear algebra)}, \url{https://en.wikipedia.org/wiki/Quotient_space_(linear_algebra)}, Wikipedia, March 25 2016
+\bibitem{wikiBetti} unknown, \emph{Betti Number}, \url{https://en.wikipedia.org/wiki/Betti_number}, Wikipedia, March 29 2016
+\bibitem{wikiSVD} unknown, \emph{SVD}, \url{https://en.wikipedia.org/wiki/Singular_value_decomposition}, Wikiperia, June 8 2016
 \end{thebibliography}
 
 \appendix
@@ -824,17 +850,20 @@ In this appendix all the code made during the project can be found.
 \section{Betti}
 \lstinputlisting{../code/betti.py}
 \lstinputlisting{../code/betti_file.py}
+\newpage
 \lstinputlisting{../code/hom.py}
 \lstinputlisting{../code/prep.py}
 \lstinputlisting{../code/bound.py}
 \lstinputlisting{../code/gauss.py}
 \lstinputlisting{../code/row.py}
+\newpage
 \lstinputlisting{../code/im_ker.py}
 \subsection{tests}
 \lstinputlisting{../code/hom_test.py}
 \lstinputlisting{../code/bound_test.py}
 \lstinputlisting{../code/gauss_test.py}
 \lstinputlisting{../code/row_test.py}
+\newpage
 \section{Preproc}
 \lstinputlisting{../code/preproc.py}
 \end{document}
