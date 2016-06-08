@@ -8,5 +8,5 @@ def dims(A):
     """
     row, col = A.nonzero()
     im_dim = len(set(row))
-    ker_dim = A.shape[1]-imDim
+    ker_dim = A.shape[1]-im_dim
     return im_dim, ker_dim
