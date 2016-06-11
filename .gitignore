@@ -3,6 +3,8 @@
 *.pdf
 /_TODO_
 /test
+
+*.m
 *.mesh
 *.aux
 *.log

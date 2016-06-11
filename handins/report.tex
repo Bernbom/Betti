@@ -1,4 +1,4 @@
-\documentclass[11pt,a4paper,twoside]{report}
+\documentclass[11pt,a4paper,twoside, openright]{report}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -44,51 +44,56 @@
 
 \begin{titlepage}
 \title{\HRule \\[0.4cm]
-\textbf{Calculation of homology groups\\for simplicial complexes}\\
+\textbf{Calculation of Homology Groups\\for Simplicial Complexes}\\
 \HRule \\[0.4cm]}
 \author{\textbf{Nanna E. V. Bernbom} - zlt712\\\\
-\textit{Computer Science}\\
-\textit{University of Copenhagen}}
+\textit{Bachelor Thesis}\\
+\textit{University of Copenhagen}\\
+\textit{Institute of Computer Science}\\ \\
+Supervisors: Aasa Feragen and François Lauze
+}
 \date{\today}
 
 \maketitle
 \thispagestyle{empty}
 \end{titlepage}
-\newpage
+\newpage\null\thispagestyle{empty}\newpage
 
-\abstract{This is probably the last section to be made}
+\abstract{This report presents simplicial homology theory based on linear algebra. The theory has been compresed into an algorithm for calculating Betti numbers, which has been implemented in \texttt{Python} using \texttt{SciPy}. The implementation and algorithm has been improved several times. It currenty has a worst case run time of $O((m\cdot n\cdot n!)^3)$, where $m$ is the number of maximal faces in the input, and $n$ is the maximal length of the maximal faces in the input. The run time is very much due to the Gaussian elimination which is a part of the implementation, and could be greatly improved by improvements to this step.
+
+The algorithm has been implemented by use of sparse \texttt{lil\_matrix} matrices, which has greatly improved the time and space complexity of the implementation.}
 
 \tableofcontents
 \newpage
-\section*{Introduction}
-Homology theory is a part of algebraic topology that deals with holes in geometric objects. In this report the geometric objects are simplicial complexes, which are made up of triangles of different dimensions that are glued together.
+\chapter*{Introduction}
+Homology theory is a part of algebraic topology that deals with holes in geometric objects. In this report, the geometric objects are simplicial complexes, which are made up of triangles of different dimensions that are glued together.
 
 There are different types of holes. Just consider a hole in a 2-torus and compare it to the hole that is the center of a 2-sphere. Homology theory can tell the difference between different types of holes, by observing that they can be caught by spheres of different dimensions. The dimension of the $i$'th homology group is the number of holes of dimension $i$, which is what we want to know.
 
-To find the number of holes in a geometric object is not just an interesting mathematical discipline, it also has interesting practical applications. Imagine that the simplicial complexes given to the algorithm are porous stones such as limestone, then by calculating the sizes of their homology groups one can get an insight into what their surfaces are like, and there by get a better understanding of how to for example remove oil from limestone or save $CO_2$ in limestone. 
+To find the number of holes in a geometric object is not just an interesting mathematical discipline, it also has interesting practical applications. Imagine that the simplicial complexes given to the algorithm are porous stones such as limestone, then by calculating the sizes of their homology groups one can get an insight into what their surfaces are like, and thereby get a better understanding of how to for example remove oil from limestone or save $CO_2$ in limestone. 
 
 The reader of this report is expected to have a foundation in linear algebra, which can be brushed up in appendix \ref{ch:linalg}. It is also advisable to have an interest in topology.
 
-Note that Gaussian elimination of big martices within reasonable time is an open problem, that I have decided to be outside the scope of this project.
+Note that Gaussian elimination of general big martices within reasonable time is an open problem. I have decided that this problem is outside the scope of this project.
 \newpage
 \section*{Workflow}
 This project consists of three parts: the first being understanding simplicial homology theory, the second being to translate this theory into an algorithm which can be run on a computer, and lastly to implement this algorithm in \texttt{Python} and improve on it such that it can run on as large simplicial complexes as possible.
 
 For the first part I read approximately half of \emph{A Short Course in Computational Geometry and Topology} by Herbert Edelsbrunner\cite{Edelsbrunner}. I did this because it seemed manageable to read a book. When I got stuck in Edelsbrunner I read some articles of which I found \emph{An Introduction to Homology} by Prerna Nadathur \cite{Nadathur} the easiest to access. For a full list of sources please look at the bibliography.
 
-I combined the theory into the text of chapter \ref{ch:theory} where I also introduced a homemade proof of one of the central theorems of the theory (theorem \ref{thm:boundary} in this report), a definition of a Betti-vector and a definition of n-simplices.
+I combined the theory into the text of chapter \ref{ch:theory} where I also introduced a homemade proof of one of the central theorems of the theory (theorem \ref{thm:boundary} in this report), a definition of a Betti vector and a definition of n-simplices.
 
 The second part is based on two blogposts by Jeremy Kun \cite{KunPrimer}\cite{Kun} but I have expanded and changed the algorithm presented in this report to fit with the API I have defined.
 
 The third part I have preformed as an iterative process, where I first implemented a relatively naive algoritm which was somewhat mathematical in its structure. This implementation was improved several times; by use of more fitting datastructures, consideration of memory consumption and minimisation of workload. During this process I found that Gaussian elimination of big martices within reasonable time is an open problem, which I have decided to be outside the scope of this project.
 
 \chapter{Mathematical Theory} \label{ch:theory}
-In this chapter the mathematics needed to understand how to calculate homology groups is presented. For a walk through of the linear algebra needed have a look in the appendix.
+In this chapter, the mathematics needed to understand how to calculate homology groups is presented. For a walk-through of the linear algebra needed, please see appendix \ref{ch:linalg}.
 
 \section{Simplicial Complexes}
 Let us look at simplicial complexes. A simplicial complex consists of simplices that are 'glued' together in a nice way.
 
-Geometrically speaking an n-simplex is a generalisation of a triangle. It is the convex hull of $n+1$ vertices in general position \cite{Nadathur}. But since this is topology, an algebraic definition without the notion of convexity is needed.
+Geometrically speaking, an n-simplex is a generalisation of a triangle. It is the convex hull of $n+1$ vertices in general position \cite{Nadathur}. But since this is topology, an algebraic definition without the notion of convexity is needed.
 
 \begin{mydef}[n-simplex]
 Let $n\in\{-1,0,1,\dots\}$. An n-simplex is a structure of $n+1$ vertices containing all its subsets. In partiqular $\emptyset$ is the $-1$-simplex.
@@ -115,7 +120,7 @@ A simplicial complex $\Delta$ on $[n] := \{1,2,\dots ,n\}$ is a finite set of si
 For each simplicial complex one can make a chain complex over $k$, where $k$ is a field, using the following two definitions. For our purposes $k=\mathbb{R}$.
 
 \begin{mydef}[$k^{F_i(\Delta)}$ \cite{Allgaier}]
-Let $\Delta$ be a simplicial complex on $[n] := \{1,2,\dots ,n\}$. For $i\in \mathbb{Z}$ let $F_i(\Delta)$ be the set of the $i$-dimensional faces of $\Delta$ and for each $\sigma\in F_i(\Delta)$, let $e_{\sigma}$ denote the corresponding basis vector in the k-vector space, $k^{F_i(\Delta)}$. Note that for $i>n-1$ or $i<-1$, $k^{F_i(\Delta)}:=0$.
+Let $\Delta$ be a simplicial complex on $[n] := \{1,2,\dots ,n\}$. For $i\in \mathbb{Z}$, let $F_i(\Delta)$ be the set of the $i$-dimensional faces of $\Delta$ and for each $\sigma\in F_i(\Delta)$, let $e_{\sigma}$ denote the corresponding basis vector in the k-vector space, $k^{F_i(\Delta)}$. Note that for $i>n-1$ or $i<-1$, $k^{F_i(\Delta)}:=0$.
 \end{mydef}
 
 \begin{mydef}[Boundary function \cite{Allgaier}]\label{def:boundary}
@@ -139,7 +144,7 @@ The chain complex can be expanded to an augmented chain complex as follows \cite
 0\to k^{F_{n-1}(\Delta)}\overset{\partial_{n-1}}{\to}\dots\overset{\partial_{i+1}}{\to} k^{F_{i}(\Delta)}\overset{\partial_{i}}{\to}k^{F_{i-1}(\Delta)}\overset{\partial_{i-1}}{\to}\dots\overset{\partial_{0}}{\to} k^{F_{-1}(\Delta)}\to 0.
 \end{equation*}
 
-A very important classical theorem when it comes to boundary functions is one that describes what happens when one takes the boundary of a boundary. Among other things this theorem embodies the concept of orientation of simplices.
+A very important classical theorem when it comes to boundary functions is one that describes what happens when one takes the boundary of a boundary. Among other things, this theorem embodies the concept of orientation of simplices.
 \begin{mythm}\label{thm:boundary}
 For all $i\in\mathbb{Z}$ 
 \begin{equation*}
@@ -166,7 +171,7 @@ Now let $i=0,1,\dots,n-2$. For $\sigma\in F_{i+1}(\Delta)$ we have
 &=\sum_{j\in\sigma}\textnormal{sign}(j,\sigma)\partial_i\left(e_{\sigma\setminus j}\right)\\
 &=\sum_{j\in\sigma}\textnormal{sign}(j,\sigma)\sum_{k\in\sigma\setminus j}\textnormal{sign}\left(k,\sigma\setminus j\right)e_{(\sigma\setminus j)\setminus k}\numberthis \label{eq_boundary: double_sum}\\
 \end{align*}
-Let $a,b\in\sigma$ be arbitrarily chosen such that $a\not=b$. Then the two basis vectors $e_{(\sigma\setminus a)\setminus b}$ and $e_{(\sigma\setminus b)\setminus a}$ will apear in (\ref{eq_boundary: double_sum}). Note however, that these two basis vectors are the same. The only difference being whether $a$ or $b$ are removed first from $\sigma$. Now we can rewrite (\ref{eq_boundary: double_sum}) to
+Let $a,b\in\sigma$ be arbitrarily chosen such that $a\not=b$. Then the two basis vectors $e_{(\sigma\setminus a)\setminus b}$ and $e_{(\sigma\setminus b)\setminus a}$ will apear in (\ref{eq_boundary: double_sum}). Note however, that these two basis vectors are the same, the only difference being whether $a$ or $b$ is removed first from $\sigma$. Now we can rewrite (\ref{eq_boundary: double_sum}) to
 \begin{equation}
 \partial_i(\partial_{i+1}(e_\sigma))=\sum_{\{j,k\}\in\sigma}\left(\textnormal{sign}(j,\sigma)\textnormal{sign}(k,\sigma\setminus j) + \textnormal{sign}(k,\sigma)\textnormal{sign}(j,\sigma\setminus k)\right)e_{\sigma\setminus\{j,k\}} \label{eq_boundary: 0}
 \end{equation}
@@ -197,24 +202,24 @@ and we are done.
 \end{proof}
 
 \section{Homology Groups}
-Let $\Delta$ be a $n$-dimensional simplicial complex. Then by the previous section we have, for $i\in\{-1,0,\dots,n\}$, the set $F_i(\Delta)$ which is is the set of $i$-dimensional faces of $\Delta$. To every $F_i(\Delta)$ there is a related $m_i = |F_i(\Delta)|$ dimensional vector space $k^{F_i(\Delta)}$.
+Let $\Delta$ be an $n$-dimensional simplicial complex. Then by the previous section we have, for $i\in\{-1,0,\dots,n\}$, the set $F_i(\Delta)$ which is the set of $i$-dimensional faces of $\Delta$. To every $F_i(\Delta)$, there is a related $m_i = |F_i(\Delta)|$ dimensional vector space $k^{F_i(\Delta)}$.
 
 For $x,y\in k^{F_i(\Delta)}$, with $x = \sum_{l=1}^{m_i}a_le_{\sigma_l}$ and $y = \sum_{l=1}^{m_i}b_le_{\sigma_l}$ where $a_l,b_l\in k$ for all $l\in\{1,2,\dots,m_i\}$, addition is defined as 
 \begin{equation*}
 x+y = \sum_{l=1}^{m_i}(a_l+b_l)e_{\sigma_l},
 \end{equation*}
-and for $x\in k^{F_i(\Delta)}$, with $x = \sum_{l=1}^{m_i}a_le_{\sigma_l}$ and $\lambda \in k$ scalar multiplication is defined as 
+and for $x\in k^{F_i(\Delta)}$, with $x = \sum_{l=1}^{m_i}a_le_{\sigma_l}$ and $\lambda \in k$, scalar multiplication is defined as 
 \begin{equation*}
 \lambda x = \sum_{l=1}^{m_i}(\lambda a_l)e_{\sigma_l}.
 \end{equation*}
 
 Each boundary function $\partial_i:F_i(\Delta)\to F_{i-1}(\Delta)$ gives rise to two subspaces, namely the image and kernel of $\partial_i$. The image, $\im(\partial_i)$, is a subspace of $F_{i-1}(\Delta)$ and the kernel, $\ker(\partial_i)$, is a subspace of $F_{i}(\Delta)$. 
 
-There is a relation these image and kernel subspaces namely that 
+There is a relation between these image and kernel subspaces, namely that 
 \begin{equation*}
 \im(\partial_{i+1})\subset\ker(\partial_i).
 \end{equation*}
-This follows from theorem \ref{thm:boundary} in the previous section. As seen in lemma \ref{lem:subset}.
+This follows from theorem \ref{thm:boundary} in the previous section.
 \begin{mylem}\label{lem:subset}
 For all $i\in\mathbb{Z}$ 
 \begin{equation*}
@@ -222,7 +227,7 @@ For all $i\in\mathbb{Z}$
 \end{equation*}
 \end{mylem}
 \begin{proof}
-Let $a\in \im(\partial_{i+1})$ then if we take $\partial_i$ of $a$ we get that $\partial_i(a)=0\implies a\in \ker(\partial_i)$ and since $a$ was arbitrarily chosen that $\im(\partial_{i+1})\subset \ker(\partial_i)$. 
+Let $a\in \im(\partial_{i+1})$ then if we take $\partial_i$ of $a$, we get that $\partial_i(a)=0\implies a\in \ker(\partial_i)$ and since $a$ was arbitrarily chosen that $\im(\partial_{i+1})\subset \ker(\partial_i)$. 
 
 Similarly assume $\im(\partial_{i+1})\subset \ker(\partial_i)$ and let $b$ be in the pre-image of $\partial_{i+1}$ then there exists an $a\in\im(\partial_{i+1})$ such that 
 $\partial_{i+1}(b)=a$ since $a\in\ker(\partial_i)$, $\partial_i\circ\partial_{i+1}=\partial_i(\partial_{i+1}(b))=0$. 
@@ -234,75 +239,173 @@ For $i\in\mathbb{Z}$ the $i$'th reduced homology of $\Delta$ over $k$ can be fou
 \bar{H}_i(\Delta;k):=\ker(\partial_i)/\im(\partial_{i+1}).
 \end{equation}
 
-Having the homology groups we can calculate their dimensions since they are vector spaces; these are also called the Betti numbers of the simplicial complex. The $i$'th Betti number can be understood as the number of holes which can be caught by an $i$-sphere \cite{wikiBetti}.
+Having the homology groups, we can calculate their dimensions since they are vector spaces; these are also called the Betti numbers of the simplicial complex. The $i$'th Betti number can be understood as the number of holes which can be caught by an $i$-sphere \cite{wikiBetti}.
 
-What is interesting about the Betti numbers is the fact that they do not depend on the  specific simplicial complex but on the "shape" of the complex. So if two simplicial complexes represent the same object then their Betti numbers will be the same, since the homology groups of the simplicial complexes are isomorphic to one another \cite[p. 70]{Edelsbrunner}. 
+What is interesting about the Betti numbers is the fact that they do not depend on the  specific simplicial complex but on the "shape" of the complex. So if two simplicial complexes represent the same object, then their Betti numbers will be the same, since the homology groups of the simplicial complexes are isomorphic to one another \cite[p. 70]{Edelsbrunner}. 
 
 The dimension, $H_i$, of the $i$'th homology group can be found by the following equation \cite[p.2]{Allgaier}:
 \begin{equation}\label{eq:homology_group}
 H_i = \dim(\ker(\partial_i))-\dim(\im(\partial_{i+1})).
 \end{equation}
 
-A Betti-vector is a way to present the Betti numbers in an orderly manner. If $H_i$ is the $i$'th Betti number, a Betti-vector has the following form:
+A Betti vector is a way to present the Betti numbers in an orderly manner. If $H_i$ is the $i$'th Betti number, a Betti vector has the following form:
 \begin{equation*}
 H = (H_{-1},H_0,H_1,\dots,H_n)
 \end{equation*}
 where $n$ is the dimension of the simplicial complex
 
-An f-vector is, like the Betti-vector, a way to present knowledge about a simplicial complex in a concise way. The $i$'th entry in the f-vector is the the number of faces of $i$ dimensions \cite[p.15]{Jonsson}. So:
+Like the Betti vector, an f-vector is, a way to present knowledge about a simplicial complex in a concise way. The $i$'th entry in the f-vector is the number of faces of $i$ dimensions \cite[p.15]{Jonsson}. So:
 \begin{equation*}
 f = (|F_{-1}|,|F_0|,\dots,|F_n|)
 \end{equation*}
-\chapter{Algorithm}\label{ch:algebra}
-The knowledge from the previous chapter can be compressed into the algorithm in figure \ref{fig:Algorithm} for calculating Betti-vectors:
+\chapter{Algorithm}\label{ch:algorithm}
+The knowledge from the previous chapter can be compressed into the algorithm in figure \ref{fig:Algorithm} for calculating Betti vectors:
 \begin{figure}[H]
 \begin{lstlisting}[numbers=left]
-def betti(d,simplicial_complex)
-    # find the faces of the simplex and sort them into lengths
-    for i in range(d+1) # to include partial_-1
-        # caluculate boundary matrix partial_i
-        # calculate dimensions of image and kernel of partial_i
+def betti(d,maximal_faces)
+    find the faces of the simplex 
+    sort the faces into lengths
+    for i in range(d+1) # to include bound_-1
+        caluculate boundary matrix bound_i
+        calculate dimensions of image and kernel of bound_i
     for i in range(  
         H[i] = dim_ker_i - dim_im_i+1 # where dimensions are 0 if not calculated
     return H
 \end{lstlisting}
-\caption{Algorithm to calculating Betti-vectors.}
+\caption{Algorithm for calculating Betti vectors.}
 \label{fig:Algorithm}
 \end{figure}
 This algorithm consists of several subalgorithms. We start from the beginning. To find all the faces of a simplicial complex one has to has to split all the maximal faces into all the smaller faces that can possibly be made from it. This method is based on definition \ref{def:simplicial_complexes} and can be found in figure \ref{fig:Algorithm_faces}
 \begin{figure}[H]
 \begin{lstlisting}[numbers=left]
 def prepare(simplicial_complex)
+    combinations = set([])
     for maximal_face in simplicial_complex:
         for i in range(len(maximal_face)):
-            # make combinations of 0-dimentional faces in maximal_face of length i
+            combinations.update(combinations of 0-dimensional faces in maximal_face of length i)
     return combinations    
 \end{lstlisting}
-\caption{Algorithm to finding faces of a simplicial complex.}
+\caption{Algorithm for finding faces of a simplicial complex.}
 \label{fig:Algorithm_faces}
 \end{figure}
-To see that is makes sense to caluculate the boundary matrix partial\_i note that the boundary functions of definition \ref{def:boundary} are linear maps from $k^{F_i(\Delta)}$ to $k^{F_{i-1}(\Delta)}$. By making all the boundary functions from $k^{F_i(\Delta)}$ to $k^{F_{i-1}(\Delta)}$ one gets a system of linear equations which can be represented by a boundary matrix.
-
-How to calculate the dimentions of a matrix should be well known to the reader from linear algebra, but is included here for completeness. See figure \ref{fig:Algorithm_dims}.
+To see that it makes sense to caluculate the boundary matrix partial\_i, note that the boundary functions of definition \ref{def:boundary} are linear maps from $k^{F_i(\Delta)}$ to $k^{F_{i-1}(\Delta)}$. By making all the boundary functions from $k^{F_i(\Delta)}$ to $k^{F_{i-1}(\Delta)}$ one gets a system of linear equations which can be represented by a boundary matrix. The algorithm can be found in figure \ref{fig:Algorithm_matrix}
 \begin{figure}[H]
 \begin{lstlisting}[numbers=left]
-def dims(boundary_matrix)
-    # perform Gausian elimination on boundary_matrix
-    im_dims = number of non-zero rows in boundary_matrix
-    ker_dims = number of rows in boundary_matrix - im_dims
+def boundary(a,b):
+    numrow = len(b)
+    numcol = len(a)
+    if numrow == 0:
+        B = matrix with 1 row and numcol columns consisting of 1s
+    else:
+        initialise B to a numrow*numcol matrix of 0s 
+        for sigma in a:
+            for j in sigma:
+                i = index of sigma\j in b
+                k = index of sigma in a
+                B[i,k] = (-1)**(index of j in sigma) 
+    return B
+\end{lstlisting}
+\caption{Algorithm for constructing a boundary matrix from a to b.}
+\label{fig:Algorithm_matrix}
+\end{figure}
+How to calculate the dimensions of a matrix should be well known to the reader from linear algebra, but is included here for completeness. See figure \ref{fig:Algorithm_dims}.
+\begin{figure}[H]
+\begin{lstlisting}[numbers=left]
+def dims(bound_i)
+    perform Gausian elimination on bound_i
+    im_dims = number of non-zero rows in bound_i
+    ker_dims = number of rows in bound_i - im_dims
     return (im_dims, ker_dims)
 \end{lstlisting}
-\caption{Algorithm to finding the dimentions of the kernel and the image of a boundary matrix.}
+\caption{Algorithm for finding the dimensions of the kernel and the image of a boundary matrix.}
 \label{fig:Algorithm_dims}
 \end{figure}
-Note that Gaussian elimination has been used instead of a faster method such as singular value decomposition because a correct result instead of an approximation is needed in order for the Betti values to be correct. Have a look at the discusion in the end of the report for more details.
+Note that Gaussian elimination \ref{fig:Algorithm_gauss} has been used instead of a faster method such as singular value decomposition because a correct result instead of an approximation is needed in order for the Betti values to be correct. Have a look at the discusion in the end of the report for more details.
+\begin{figure}[H]
+\begin{lstlisting}[numbers=left]
+def elimination(bound_i)
+   r,c = 0,0
+   while c < number of columns and r < number of rows:
+       nonzero = the nonzero row indices in [r:] of column c
+       if len(nonzero) == 0:
+           c += 1
+           continue
+       if nonzero[0]!=r:
+           swap the row of r with the row of nonzero
+       scale the row of r such that (r,c) = 1
+       for l in nonzero[1:]:
+           subtract row r from row l until (l,c)=0
+       r += 1
+       c += 1
+   return bound_i
+\end{lstlisting}
+\caption{Algorithm for Gaussian elimination.}
+\label{fig:Algorithm_gauss}
+\end{figure}
+The last calculation in figure \ref{fig:Algorithm} is equation (\ref{eq:homology_group}).
+\section{Complexity Analysis}
+The algorithms can be analysed to find the worst case runtime and space complexity. 
 
-The last calculation in figure \ref{fig:Algorithm} is a copy of equation (\ref{eq:homology_group}).
+\subsection{Dimensions of the Kernel and Image}
+First of all consider Gaussian elimination figure \ref{fig:Algorithm_gauss}. It has a worst case runtime of $O(\max(n,m)^3)$, where $n$ is the number of rows and $m$ is the number of columns. To see this, note that there are 4 places in the while loop where the worst case runtime is different from $O(1)$, those are 
+\begin{itemize}
+\item Finding nonzero, which takes $O(n)$.
+\item Swaping two rows, which depending on the implementation takes either $O(1)$ or $O(m)$, the difference being whether it is a pointer operation or if swap copies the data.
+\item Scaling a row, which takes $O(m)$.
+\item The for loop, where one iteration takes $O(m)$ and there are $O(n)$ iterations resulting in a worst case run time of $O(n\cdot m)$.
+\end{itemize}
+Note that the most expensive part is the for loop. Its worst case runtime now has to be multiplied by the number of times the while loop runs. That results in a runtime of $O(\min(n,m)\cdot n \cdot m)$ which can be bounded by $O(k^3)$ where $k = \max(\min(n,m), n, m)=\max(n,m)$, so the worst case runtime is $O(\max(n,m)^3)$.
 
+The worst case space complexity of the Gaussian elimination is $O(n\cdot m)$. This can be improved by using a sparse matrix representation.
+
+When one studies the algorithm for finding dimensions of the kernel and image of a matrix in figure \ref{fig:Algorithm_dims}, one sees that the besides from the Gaussian elimination the steps all take constant time, and when considering space complexity there is nothing which takes up more space than the Gaussian elimination. Hence the time and space complexity of the algorithm is the same as Gaussian elimination.
+
+\subsection{Making Matrices}
+The algorithm for building boundary matrices found in figure \ref{fig:Algorithm_matrix} has a worst case space complexity of $O(\max(1,len(b))\cdot len(a))$, since this is the number of entries in the matrix. This number can be improved by use of sparse matrices.
+
+The time complexity can be found as follows:
+Assume it takes constant time to find the index of an element in a or b, which can be done by using dictionaries. Then the inner loop takes $O(len(sigma))$.
+The second innermost loop takes $O(len(a)\cdot len(sigma))$.
+Making a matrix of zeroes takes constant time, when the matrix is sparse, so the else branch takes $O(len(a)\cdot len(sigma))$
+The if branch takes $O(len(a))$, so the if else case takes $O(len(a)\cdot len(sigma))$. 
+For the $O(len(a)\cdot len(sigma))$ runtime to be the worst case run time of the algorithm it has to be slower than the construction of the previous mentioned dictionary, which is $O(len(b))$.
+So the run time is $O(\max(len(a)\cdot len(sigma),len(b))$, which for most cases is $O(\max(len(a),len(b))$, since $len(sigma)$ is usually small ($\leq 4$).
+ 
+
+\subsection{Finding Faces}
+Consider the algorithm for finding the faces of a simplicial complex, figure \ref{fig:Algorithm_faces}. If $m = len(\text{maximal faces})$ and $n = \text{maximal length of the maximal faces}$. The algorithm has a time complexity of $O(m\cdot n\cdot n!)$ which for the usual input of the algorithm is $O(m)$ since $n$ is small (usualy less than 4). The space complexity is the same. The argument is as follows:
+\begin{itemize}
+\item For each call to finding combinations $O(n!)$ combinations are made, which also takes $O(n!)$ time.
+\item The inner loop is run $n$ times thereby creating $O(n!)$ elements per iterations resulting in $O(n\cdot n!)$ elements in $O(n\cdot n!)$ time.
+\item The outer loop is run $m$ times thereby creating $O(n\cdot n!)$ elements per iterations resulting in $O(m\cdot n\cdot n!)$ elements in $O(m\cdot n\cdot n!)$ time or in $O(\text{number of faces})$ when comparing to the rest of the algorithms.
+\end{itemize}
+
+\subsection{Betti}
+\begin{figure}[H]
+\center
+\begin{tabular}{c|c|c}
+line&time&space\\
+\hline
+2&$O(\text{number of faces})$&$O(\text{number of faces})$\\
+3&$O(\text{number of faces})$&$O(\text{number of faces})$\\
+5&$O(\max(n,m))$&$O(n\cdot m)$\\
+6&$O(\max(n,m)^3)$&$O(n\cdot m)$\\
+8&$O(d)$&$O(d)$\\
+\end{tabular}
+\caption{Study of the complexity of algorithm for calculating Betti numbers, with $n=$number of rows and $m=$number of columns.}
+\label{fig:runtime}
+\end{figure}
+When considering figure \ref{fig:Algorithm} and studying one line at at time, as done in figure \ref{fig:runtime}, one sees that the time complexity is either $O(\text{number of faces})$ or $O(k^3)$, where $k$ is the length of the maximal set of faces with a given length.
+
+Since the number of faces is $O(\text{maximal faces})$, for the inputs of the algorithm, which is just one of the considered sets when finding $k$, $O(k^3)$ is the worst case runtime of the algorithm. Note that this run time stems from the Gaussian elimination, and if another more efficient implementation of this algorithm can be found, the entire algorithm will have a better run time.
+
+Considering space complexity, the algorithm has the space complexity of Gaussian elimination, since by the same argument as before $O(\text{number of rows}\cdot \text{number of columns})>O(\text{maximal faces})$.
+
+If a worst case upper bound on the complexity of the algorithm calculating Betti numbers is to be given as an expression of the input, then the time complexity is $O((m\cdot n\cdot n!)^3)$, where $m$ is the number of maximal faces, and $n$ is the maximal length of the maximal faces. The space complexity will then be $O((m\cdot n\cdot n!)^2)$.
 \chapter{Examples of Calculations of Homology Groups}
-It is time for some examples on how to calculate homology groups. The details of the calculations will be spelled out for the first example where as the rest of the examples will be explained more briefly.
+It is time for some examples on how to calculate homology groups. The details of the calculations will be spelled out for the first example, whereas the rest of the examples will be explained more briefly.
 \begin{myex}
-Consider the simplicial complex $\Delta_1$ consisting of all the subsets of $\{1,2,3\}$, $\{2,4\},\{3,4\}$ and $\{5\}$
+Consider the simplicial complex $\Delta_1$ in figure \ref{fig:ex1}, consisting of all the subsets of $\{1,2,3\}$, $\{2,4\},\{3,4\}$ and $\{5\}$
 \begin{figure}[H]
 \center
 \begin{tikzpicture}
@@ -313,7 +416,7 @@ Consider the simplicial complex $\Delta_1$ consisting of all the subsets of $\{1
 \caption{$\Delta_1$ consists of all subsets of $\{1,2,3\},\{2,4\},\{3,4\}$ and $\{5\}$}
 \label{fig:ex1}
 \end{figure}
-By observing $\Delta_1$ the following sets of $i$-faces $F_i(\Delta)$ are found:
+By observing $\Delta_1$ the following sets of $i$-faces, $F_i(\Delta)$, are found:
 \begin{align*}
 F_2(\Delta) &= \{\{1,2,3\}\}\\
 F_1(\Delta) &= \{\{1,2\},\{1,3\},\{2,3\},\{2,4\},\{3,4\}\}\\
@@ -385,12 +488,13 @@ The matrices are row reduced to find the dimensions of the images and the kernel
 0
 \end{bmatrix}
 \end{align*}
-We count $rk(\partial_2)=1$ which is another way of saying $\dim(\im(\partial_2))=1$. Now we use the rank-nullity theorem (can be found as theorem \ref{thm:rank_nullity} in the appendix) to calculate the dimension of the kernel of $\partial_2$.
+We count $rk(\partial_2)=1$ which is another way of saying $\dim(\im(\partial_2))=1$. Now we use the rank-nullity theorem \footnote{please see theorem \ref{thm:rank_nullity} in the appendix} to calculate the dimension of the kernel of $\partial_2$.
 \begin{align*}
 \dim(\ker(\partial_2))&=\dim(k^{F_2(\Delta)})-\dim(\im(\partial_2))\\
-&=1-1= 0
+&=1-1\\
+&= 0
 \end{align*}
-We continue to row-reduce $\partial_1$:
+We continue to row reduce $\partial_1$:
 \begin{align*}
 \partial_1=&
 \begin{bmatrix}
@@ -438,7 +542,7 @@ We count $rk(\partial_1)=\dim(\im(\partial_1))=3$ and use the rank-nullity theor
 \dim(\ker(\partial_1))&=\dim(k^{F_1(\Delta)})-\dim(\im(\partial_1))\\
 &=5-3= 2
 \end{align*}
-Lastly note that 
+Lastly, note that 
 \begin{equation*}
 \partial_0=
 \begin{bmatrix}
@@ -465,11 +569,11 @@ since $\dim(\ker(\partial_0))-\dim(\im(\partial_{1}))=4-3=1$, and
 since $\dim(\ker(\partial_{-1}))-\dim(\im(\partial_{0}))=1-1=0$
 \end{itemize}
 The rest of the homology groups are 0 since they are $0/0$-expressions.
-So the Betti-vector is $H=(0,1,1,0)$
+So the Betti vector is $H=(0,1,1,0)$
 \end{myex}
 The next example illustrates that the choice of partitioning of an object into a specific simplicial complex instead of another does not change the Betti numbers.
 \begin{myex}
-Consider the simplicial complex $\Delta_2$ consisting of all the subsets of $\{1,2,3\},$ $\{1,3,4\},\{2,3,4\},\{2,5\},\{4,5\}$ and $\{6\}$
+Consider the simplicial complex $\Delta_2$ in figure \ref{fig:ex2}, consisting of all the subsets of $\{1,2,3\},$ $\{1,3,4\},\{2,3,4\},\{2,5\},\{4,5\}$ and $\{6\}$
 \begin{figure}[H]
 \center
 \begin{tikzpicture}
@@ -491,7 +595,7 @@ F_{-1}(\Delta) &= \{\emptyset\}
 \end{align*}
 This results in the f-vector $f=(1,6,8,3)$ and the augmented chain complex:
 \begin{equation*}
-0\overset{\partial_3}{\to} k^3\overset{\partial_2}{\to} k^8\overset{\partial_1}{\to} k^6\overset{\partial_0}{\to} k \overset{\partial_{-1}}{\to} 0
+0\overset{\partial_3}{\longrightarrow} k^3\overset{\partial_2}{\longrightarrow} k^8\overset{\partial_1}{\longrightarrow} k^6\overset{\partial_0}{\longrightarrow} k \overset{\partial_{-1}}{\longrightarrow} 0
 \end{equation*}
 The $\partial_i$'s are found using definition \ref{def:boundary}, which results in the following matrices:
 \begin{align*}
@@ -585,12 +689,12 @@ since $\dim(\ker(\partial_0))-\dim(\im(\partial_{1}))=5-4=1$, and
 since $\dim(\ker(\partial_{-1}))-\dim(\im(\partial_{0}))=1-1=0$
 \end{itemize}
 The rest of the homology groups are 0 since they are $0/0$-expressions.
-The Betti-vector is then $H=(0,1,1,0)$
+The Betti vector is then $H=(0,1,1,0)$
 \end{myex}
-When one compares the homology groups of $\Delta_1$ and $\Delta_2$ one sees that they are the same. As it is explained in the theory section this is no coincidence, since the only difference between $\Delta_1$ and $\Delta_2$ is the partitioning into simplexes the object which is split is the same.
+When one compares the homology groups of $\Delta_1$ and $\Delta_2$, one sees that they are isomorphic. As it is explained in the theory section this is no coincidence, since the only difference between $\Delta_1$ and $\Delta_2$ is the partitioning into simplicies; the object which is split remains unchanged.
 
 \chapter{The Implementation}
-As a part of this project the algorithm to calculate Betti-vectors, described in chapter \ref{ch:algebra}, has been implemented in python as the program \texttt{Betti}. In order to use OFF files as input another program \texttt{Preproc}, which pre-processes the OFF file to a format that \texttt{Betti} can read, has been made.
+As a part of this project the algorithm to calculate Betti vectors, described in chapter \ref{ch:algorithm}, has been implemented in python as the program \texttt{Betti}. In order to use OFF files as input another program \texttt{Preproc}, which pre-processes the OFF file to a format that \texttt{Betti} can read, has been made. The entire source code can be found in appendix \ref{ch:source_code} or on GitHub: \url{https://github.com/Bernbom/Betti}
 
 \begin{figure}[H]
 \center
@@ -634,7 +738,7 @@ Figure \ref{fig:program_structure} shows how the different files in the implemen
 
 The programs have been tested on a computer running Ubuntu 14.04 LTS with 16 GB RAM running Python 2.7.6 with SciPy version 0.17.1 and NumPy version 1.8.2.
 
-\section{How to call the program} \label{ch:how2call}
+\section{How to Call the Program} \label{ch:how2call}
 The main function in \texttt{Betti} is \texttt{hom.betti} which can either be imported into a python source file and be run from there or one can call the file \texttt{betti.py} from the terminal as in figure \ref{fig:bettipseudo},
 \begin{figure}[H]
 \begin{lstlisting}[language=bash]
@@ -643,7 +747,7 @@ $ python betti.py <d> <maximal faces>
 \caption{How to call \texttt{Betti} using \texttt{betti.py}}
 \label{fig:bettipseudo}
 \end{figure}
-where \texttt{<d>} is an integer which is the dimensions of the simplicial complex, and \texttt{<maximal faces>} is a string listing the maximal faces of the simplicial complex being investigated\footnote{Note that the string \texttt{<maximal faces>} can contain more faces than the maximal ones, but only needs the maximal ones. This is a property \texttt{betti\_file.py} takes advantage of.}. The maximal faces are reprecented as a comma-separated string. A zero dimensional face can be represented by any symbol combination except blanc spaces, i.e. tab, space, newline, ect., comma, or the symbol chosen to indicate end of a string usually ' or ". A higher dimensional face consists of combinations of zero dimensional simplices.
+where \texttt{<d>} is an integer which is the dimensions of the simplicial complex, and \texttt{<maximal faces>} is a string listing the maximal faces of the simplicial complex being investigated\footnote{Note that the string \texttt{<maximal faces>} can contain more faces than the maximal ones, but only needs the maximal ones. This is a property \texttt{betti\_file.py} takes advantage of.}. The maximal faces are reprecented as a comma-separated string. A zero dimensional face can be represented by any symbol combination except blanc spaces, i.e. tab, space, newline, ect., comma, or the symbol chosen to indicate the start and end of a string usually ' or ". A higher dimensional face consists of combinations of zero dimensional simplices separated by commas.
 
 Figure \ref{fig:betti} is an example of how the function is used:
 \begin{figure}[H]
@@ -663,7 +767,7 @@ $ python betti_file.py <d> <file containing maximal faces>
 \caption{How to call \texttt{Betti} using \texttt{betti\_file.py}}
 \label{fig:bettifile}
 \end{figure}
-Note that the second argument in figure \ref{fig:bettifile} must have the faces of the complex in one line split by spaces and each face split into zero dimensional faces by commas just as seen in figure \ref{fig:betti}. An OFF file can be made into this format using the program \texttt{Preproc} as seen in figure \ref{fig:preproc}. Note that the terminal will write "success" upon a successful run of the program.
+Note that the second argument in figure \ref{fig:bettifile} must have the faces of the complex in one line split by spaces and each face split into zero dimensional faces by commas just as seen in figure \ref{fig:betti}. An OFF file can be made into this format using the program \texttt{Preproc} as seen in figure \ref{fig:preproc}. The terminal will write "success" upon a successful run of \texttt{preproc}.
 
 \begin{figure}[H]
 \begin{lstlisting}[language=bash]
@@ -673,66 +777,63 @@ $ python preproc.py <OFF file> <output file>
 \label{fig:preproc}
 \end{figure}
 
-\section{Description of the implementation}
-As just mentioned the primary function in \texttt{Betti} is the \texttt{hom.betti} function. It is the one that calculates the Betti-vector of the \texttt{d} dimensional simplicial complex where \texttt{hom.betti} is given the integer \texttt{d} as first argument and a string containing the maximal faces as second argument. The limitations to the naming of the simplices can be found in section \ref{ch:how2call}. 
+\section{Description of the Implementation}
+As just mentioned the primary function in \texttt{Betti} is the \texttt{hom.betti} function. It is the function which calculates the Betti vector of the \texttt{d} dimensional simplicial complex. \texttt{hom.betti} is given the integer \texttt{d} as first argument and a string containing the maximal faces as second argument. The limitations to the naming of the simplices can be found in section \ref{ch:how2call}. 
 
 As can be seen from figure \ref{fig:program_structure} \texttt{hom.betti} uses the functions in the files \texttt{bound.py}, \texttt{gauss.py}, \texttt{im\_ker.py} and \texttt{prep.py}. They are \texttt{bound.boundary}, \texttt{gauss.elimination}, \texttt{im\_ker.dims} and \texttt{prep.prepare}. \texttt{gauss.elimination} calls the functions of \texttt{row} which are \texttt{row.swap}, \texttt{row.scale} and \texttt{row.combine}.
 
-\subsection{Modules used}
-The two modules \texttt{NumPy} and \texttt{SciPy} with their submodules have been used throughout the code for representation of matrices. The primary matrix reprecentation has been the sparse \texttt{lil\_matrix} in the \texttt{scipy.sparse} module but the regular matrix from \texttt{NumPy} has been used in one case to make a matrix that was then changed to a sparse matrix right away. 
+\subsection{Modules Used}
+The two modules \texttt{NumPy} and \texttt{SciPy} with their submodules have been used throughout the code for representation of matrices. The primary matrix reprecentation has been the sparse \texttt{lil\_matrix} in the \texttt{scipy.sparse} module but the regular matrix type from \texttt{NumPy} has been used in one case to make a matrix that was then changed to a sparse matrix right away. 
 
-The module \texttt{Itertools} have been used in the function \texttt{prep.prepare}, which takes a string of the maximum simplices of a simplicial complex and returns a list of all the simplices in the simplicial complex, to create the strings representing the simplices. The source code can be found in appendix \ref{ch:source_code}.
+The module \texttt{Itertools} have been used in the function \texttt{prep.prepare}, which takes a string of the maximum simplices of a simplicial complex and returns a list of all the simplices in the simplicial complex. \texttt{Itertools} has been used to create the strings representing the simplices. The source code can be found in appendix \ref{ch:source_code}.
 
 The module \texttt{sys} has been used in \texttt{betti.py}, \texttt{betti\_file.py} and \texttt{preproc.py} for making the main fuctions.
 
 \subsection{The Functions}
 
-I will now go through all the functions to describe how they work.
+This section goes through all the functions and describes how they work.
 
 \begin{description}
-\item[\texttt{preproc.simcom\_prep(off\_file, target\_file)}] given an off file containing a simplicial complex returns a file containing the simplicial complex in one line in a format ready for \texttt{betti\_file.py}. 
-\item[\texttt{hom.betti(d,<maximal faces>)}] calculates the Betti-vector of the d dimensional simplicial complex with the given maximal faces.
-\item[\texttt{prep.prepare(<maximal faces>)}] given the maximal faces of a simplicial complex, as a string, creates a list of faces in that complex.
-\item[\texttt{bound.boundary(a,b)}]creates the boundary matrix from a to b, where a and b are given as lists of strings. The boundary matrix contains the coefficients of the boundary functions: $\partial(e_{\sigma}) = \sum_i((-1)^{index(i)}e_{\sigma\setminus i})$.
-\item[\texttt{gauss.elimination(A)}] given a matrix A returns the gauss eliminated matrix.
-\item[\texttt{im\_ker.dim(A)}] given a matrix from \texttt{gauss.elimination} returns the dimensions of its image and kernel.
-\item[\texttt{row.swap(A,i,j)}] in matrix A: swap row i and j. This function is necessary since SciPy does not eagerly copy data but only does it when it is explicitly told to do it.
-\item[\texttt{row.scale(A,i,n)}] in matrix A: multiply row i with n.
-\item[\texttt{row.combine(A,i,j,n)}] in matrix A: add row j to row i n times.
+\item[\texttt{preproc.simcom\_prep(off\_file, target\_file)}:] given an off file containing a simplicial complex returns a file containing the simplicial complex in one line in a format ready for \texttt{betti\_file.py}. 
+\item[\texttt{hom.betti(d,<maximal faces>)}:] calculates the Betti vector of the d dimensional simplicial complex with the given maximal faces.
+\item[\texttt{prep.prepare(<maximal faces>)}:] given the maximal faces of a simplicial complex, as a string, creates a list of faces in that complex.
+\item[\texttt{bound.boundary(a,b)}:]creates the boundary matrix from a to b, where a and b are given as lists of strings. The boundary matrix contains the coefficients of the boundary functions: $\partial(e_{\sigma}) = \sum_i((-1)^{index(i)}e_{\sigma\setminus i})$.
+\item[\texttt{gauss.elimination(A)}:] given a matrix A returns the gauss eliminated matrix.
+\item[\texttt{im\_ker.dim(A)}:] given a matrix from \texttt{gauss.elimination} returns the dimensions of its image and kernel.
+\item[\texttt{row.swap(A,i,j)}:] in matrix A: swap row i and j.
+\item[\texttt{row.scale(A,i,n)}:] in matrix A: multiply row i with n.
+\item[\texttt{row.combine(A,i,j,n)}:] in matrix A: add row j to row i n times.
 \end{description}
 Furthermore there are the main functions \texttt{betti.py} and \texttt{betti\_file.py} described in section \ref{ch:how2call}.
 
 \subsection{Optimisations}
-Some optimisations have been made in order to make it possible to run the programs with big datasets\footnote{more than a million nodes if one ignores the Gaussian elimination.}.
+Some optimisations have been made in order to make it possible to run the programs with big datasets\footnote{Big here means more than a million nodes if one ignores the Gaussian elimination. If one is interested in running the entire program the maximum data set which has been run is with 600000 nodes.}.
 \begin{description}
 \item[The Betti algorithm] Instead of using the mathematical most intuitive algorithm where all the boundary marices are calculated first after which all the dimensions are calculated followed by the Betti numbers, an algorithm where only one matrix is needed at a time in the RAM has been used. This results in the program being able to handle larger inputs without running out of RAM.
-\item[Type of matrices] Another way of minimising the use of memory in the program is to use a sparse matrix representation, which only represent the non-zero entries of the matrices and ignores the zero entries. In this version of the program the build in \texttt{SciPy} sparse matrix representation \texttt{lil\_matrix} has been used. An argument for this choice is presented in the discussion.
-\item[Use of dictionary] Instead of making a linear index search for faces in b in \texttt{bound.boundary} A dictionary has been used to contain the faces in b, where the key is the tuple equvalent to the face and the value is the index of the face.
-\item[Use of set] In \texttt{prep.prepare}, when making the list of faces, a set was used to contain the finished faces. This resulted in only new faces was added to set wich minimised the use of memory in this function.
-\item[Use of \texttt{xrange}] The methode \texttt{xrange} has been used instead of \texttt{range} through out the program where it made sense. That is where the iterator contained more than a few elements.
-\item[The Gaussian elimination algorithm] In \texttt{gauss.elimination} different optimisations has been used. First and foremost the sparse structure of the input matrix has been utilised. This is done by only considering the rows that are nonzero in column $j$. Furthermore the algorithm only iterates through the rows that are further down in the matrix than the current row. This results in fewer calls to the row utility functions of \texttt{row.py}.
+\item[Type of matrices] Another way of minimising the use of memory in the program is to use a sparse matrix representation, which only represent the non-zero entries of the matrices and ignores the zero entries. In this version of the program the build in \texttt{SciPy} sparse matrix representation \texttt{lil\_matrix} has been used. An argument for this choice is presented in the concluding remarks.
+\item[Use of dictionary] Instead of making a linear index search for faces in b in \texttt{bound.boundary} A dictionary has been used to contain the faces in b, where the key is the tuple equvalent to the face and the value is the index of the face in b.
+\item[Use of sets] In \texttt{prep.prepare}, when making the list of faces, a set was used to contain the finished faces. This resulted in only new faces was added to set wich minimised the use of memory in this function.
+\item[Use of \texttt{xrange}] The methode \texttt{xrange} has been used instead of \texttt{range} through out the program where it made sense. That is where the iterator contained more than a few elements. This optimisation results in a smaller memory usage.
+\item[The Gaussian elimination algorithm] In \texttt{gauss.elimination} different optimisations have been used. First and foremost the sparse structure of the input matrix has been utilised. This is done by only considering the rows that are nonzero in column $j$. Furthermore the algorithm only iterates through the rows that are further down in the matrix than the current row. This results in fewer calls to the row utility functions of \texttt{row.py}.
 \item[Use of \texttt{getrowview}] In \texttt{row.py} the matrixoperations are as inplace as possible. A major contribution to this is the use of \texttt{getrowview} which is a build in method of \texttt{scipy.sparse.lil\_matrix}, which instead of copying the given row merely returns a view of the given row. 
-\item[Finding the dimensions of image and kernel] When finding the dimensions of the image and kernel \texttt{im\_ker.dims} makes use of the build in \texttt{lil\_matrix} method \texttt{nonzero}. This is opposed to counting the non-zero rows manualy.
+\item[Finding the dimensions of image and kernel] When finding the dimensions of the image and kernel \texttt{im\_ker.dims} makes use of the build in \texttt{lil\_matrix} method \texttt{nonzero}. This is instead of counting the non-zero rows manualy.
 \end{description}
 \subsubsection{Unsuccessful optimisations}
-There are also some optimisations that did not work. These are optimisations that tried to avoid using Gaussian elimination. This was done due to the fact that Gaussian elimination has a known worst case runtime of $O(n^3)$ and after all the other optimisations the Gaussian elimination was clearly the slowest section of the algorithm.
+There are also some optimisations that did not work. These are optimisations that tried to avoid using Gaussian elimination. This was done due to the fact that Gaussian elimination has a worst case runtime of $O(n^3)$ (pease see chapter \ref{ch:algorithm}) and after all the other optimisations the Gaussian elimination was clearly the slowest section of the algorithm.
 
 Common for the methods experimented with are that they try to estimate the rank of the boundary matrices instead of calculating the exact rank. This turned out to be a bad idea, since all the tests ended up failing with the estimating methods by giving the wrong results and when the methods were tried on the bigest dataset described in section \ref{ch:test_data} the result was a memory error. 
 
 The methods experimented with were LU decomposition, SVD, QR and a build in \texttt{SciPy} method called \texttt{estimate\_rank}.
 
-My best guess to why the methods gave the wrong result is that the boundary matrices are rank deficient which I have found sources for that at least SVD \cite{wikiSVD} has problems with that kind of matrices. Furthere more the boundary matrices contain only $-1$'s, 0's and 1's in the beginning, and since the mentioned methods are iterative I can imagine some problems with numbers so close to one another.
-\subsection{Complexity analysis}
-
-
+My best guess to why the methods gave the wrong result is that the boundary matrices are rank deficient which I have found sources for that at least SVD \cite{wikiSVD} has problems with that kind of matrices. Furthere more the boundary matrices contain only $-1$'s, 0's and 1's in the beginning, and since the mentioned methods are iterative I can imagine some problems with the numbers being so close to one another.
 \section{Tests}
-As shown in figure \ref{fig:program_structure} there are 4 files which tests the implementation of \texttt{Betti}. These are \texttt{hom\_test.py}, \texttt{bound\_test.py}, \texttt{gauss\_test.py} and \texttt{row\_test.py}. With the primary test being \texttt{hom\_test.py}. It tests whether the entire program returns the correct Betti-vector on a given simplicial complex. It has 7 test cases testing both simplicial comlexes of 2 and 3 dimensions, simplicial complexes given in diffenrent orders, simplicial complexes with long 0-face names and the two corner cases of an empty simplicial complex and a simplicial complex containing only a 0-simplex. 
+As shown in figure \ref{fig:program_structure} there are 4 files which tests the implementation of \texttt{Betti}. These are \texttt{hom\_test.py}, \texttt{bound\_test.py}, \texttt{gauss\_test.py} and \texttt{row\_test.py}. With the primary test being \texttt{hom\_test.py}. It tests whether the entire program returns the correct Betti vector on a given simplicial complex. It has 7 test cases testing both simplicial comlexes of 2 and 3 dimensions, simplicial complexes given in diffenrent orders, simplicial complexes with long 0-face names and the two corner cases of an empty simplicial complex and a simplicial complex containing only a 0-simplex. 
 
 The two files \texttt{gauss\_test.py} and \texttt{bound\_test.py}, tests the implementation of the two second most important functions of the program.
 
 The file \texttt{row\_test.py} contains one test per function in \texttt{row.py} to test that the utility functions behave as expected.
 
-The rest of the implementation has been tested using manual testing during the development. 
+The rest of the implementation has been tested using manual testing during the development. All the tests have been successful on the current version of \texttt{Betti}.
 
 The four files containing tests have been made using the unittest Python module. They can be called from the terminal as seen in figure \ref{fig:how2test}:
 \begin{figure}[H]
@@ -742,33 +843,86 @@ $ python <test file name>
 \caption{How to call a test.}
 \label{fig:how2test}
 \end{figure}
+Upon a succesful run of a test, the terminal will print "Ran <n> tests in 0.029s OK" where <n> is th number of tests.
 
-\section{Test Data}\label{ch:test_data}
-\texttt{Betti} has run on 3 different data sets of different sizes with varied success. 
-All the data sets are 3D network structures of some biological data to which voluminous meshs described by OFF files have been fittet. 
+\section{Run on Data Sets}\label{ch:test_data}
+The following data sets have been run using \texttt{preproc.py} and \texttt{betti\_file.py} on the big computer described in section \ref{ch:dependencies}. All the datasets are meshes described by OFF files. 
+
+The triangulation of a teapot shown in figure \ref{fig:teapot} has been run by \texttt{Betti}. The result which came within 52 minutes was the following Betti vector $[0,4,12501,0]$. Which means that there are 5 conected components and 12501 tunnels in the data.
+
+This result look strange, but not as strange as one might think. When one studies the mesh of the teapot, one sees that it consists of 4 parts: a lid, a spout, a handle and a body. But this only ads up to 4 components.
+
+I have no explanation for the tunnels.
 \begin{figure}[H]
+\begin{minipage}[b]{0.45\linewidth}
+\center
+\includegraphics[scale=0.5]{teapot00.png}
+\end{minipage}
+\hspace{0.5cm}
+\begin{minipage}[b]{0.45\linewidth}
+\center
+\includegraphics[scale=0.5]{teapot01.png}
+\end{minipage}
+\caption{A triangulation of a teapot}
+\label{fig:teapot}
+\end{figure}
+
+\texttt{Betti} has also run on 3 other data sets of different sizes with varied success. 
+The data sets are 3D network structures of some biological data to which voluminous meshes have been fittet.
+\begin{figure}[H]
+\center
 \includegraphics[scale=0.5]{downsampled00.png}
 \caption{The biggest dataset}
 \label{fig:mesh_down}
 \end{figure}
-The first dataset, see figure \ref{fig:mesh_down} is a mesh with 1088346 nodes. Based on it taking 5 minutes for \texttt{Betti} to calculate 1 columns in the second Gaussian elimination I guess it will take approximately a year for \texttt{Betti} to run the data. When one ignores the Gaussian elimination it takes 10-15 minutes for \texttt{Betti} to run the data set on the big computer described in section \ref{ch:dependencies}. There are no problems with the memory, as long as it is run on the mentioned conputer. On the smaller computer it takes a lot longer to run the program and it runs out of memory before it is done.
+The first data set, see figure \ref{fig:mesh_down} is a mesh with 1088346 nodes. Based on it taking 5 minutes for \texttt{Betti} to calculate 1 columns in the second Gaussian elimination I guess it will take approximately a year for \texttt{Betti} to run the data, since I have calculated that there are approximately 5 million columns in the second biggest matrix of the data set. 
 
+When one ignores the Gaussian elimination it takes 10-15 minutes for \texttt{Betti} to run the data set on the big computer described in section \ref{ch:dependencies}. There are no problems with the memory, as long as it is run on the mentioned computer. On the smaller computer it takes a lot longer to run the program and it runs out of memory before it is done.
 \begin{figure}[H]
+\center
 \includegraphics[scale=0.5]{testmesh2d00.png}
 \caption{The second biggest dataset}
 \label{fig:mesh_2d}
 \end{figure}
+The mesh of figure \ref{fig:mesh_2d} is currently still running. It is expected to run for a total of half a month.
 
 \begin{figure}[H]
+\center
 \includegraphics[scale=0.5]{testmesh00.png}
 \caption{The smallest dataset}
 \label{fig:mesh_}
 \end{figure}
+The data set visualised in figure \ref{fig:mesh_} was run in approximately 6 and a half hour. The result was the following Betti vector $[0,40,36410,0,0]$. Again the numbers seem high.
+
 \chapter{Concluding Remarks}
+This report has presented the theory of simplicial homology theory. This could be expanded to singular homology theory for more abstract definitions. But the spimplicial homology theory does its job when it comes to understanding the algorithm for calculating Betti numbers.
 
-\section{Discussion}
+The algorithm for calculating Betti numbers presented in this report has a worst case time complexity of $O((m\cdot n\cdot n!)^3)$, where $m$ is the number of maximal faces, and $n$ is the maximal length of the maximal faces. The space complexity is $O((m\cdot n\cdot n!)^2)$. Here it should be noted that $n$ is small ($\leq 4$)for the usual input to the program, so the actual complexities are $O(m^3)$ for time and $O(m^2)$ for space. 
 
-\section{Conclusion}
+Both of the complexities are loose and worst case, but are difficult to make tighter. When one looks at the space complexity the actual complexity is dependent of the sparseness of the boundary matrices, but since it is difficult to to say anything about the sparseness of the boundary matrices during the Gaussian elimination, a more tight bound is difficult to give. The time complexity is again dependent of the Gaussian eliminations and the sparseness of the boundary matrices during these eliminations. 
+
+It is desireable to be able to run the program on data sets with more than a million nodes. This will make it possible to use it for characterising porous stones, as mentioned in the introduction. Eventhough the actual complexity of the program is most likely between $O(m^3)$ and $O(m^2)$. It needs to go down to somewhere between $O(m^2)$ and $O(m)$ in order for the program to be able to run on such big data sets.
+
+Several experiments have been made in the quest for improving the complexities of the Betti number calculating program implemented as a part of this project in \texttt{Python}. The program is called \texttt{Betti}. Some of the experiments were successful others were not. Of the successful ones using a sparse matrix representation called \texttt{lil\_matrix} can be mentioned. 
+
+A \texttt{lil\_matrix} is represented as two arrays of arrays containing respectively the indices and the nonzero elements of the matrix. This representation makes it easy to find the elements of the matrix row by row, but not too expensive to find them column by column, plus it is possible to change the sparsity structure of the matrix relativly inexpensive\cite{csr}. Another advantage of \texttt{lil\_matrix} is its method called \texttt{getrowview} which returns a pointer to the give row without copying it. \texttt{lil\_matrix} was choosen instead of the to two representatioins called \texttt{dok\_matrix} and \texttt{csr\_matrix}. These two formats are respectively a dictionary over the nonzero elements\cite{wikiSparse} and three arrays where one contains all the nonzero data of the matrix, one contains all the column indices of the nonzero elements and the last contains the indices of the row starts in the column array\cite{karlrupp}.
+
+The two other matrix representations have advantages and disadvantages. The \texttt{dok\_matrix} is efficient when looking up individual elements, because of the dictonary structure, and is efficient, even more than the \texttt{lil\_matrix}, when changing the sparsity structure. Its disadvantages is that it does not have an efficient way to look up a row but has to go through the dictionary for every element. It is also lacking the \texttt{getrowview} method of \texttt{lil\_matrix}\cite{dok}. The \texttt{csr\_matrix} is very efficient when it comes to looking up a row, but is inefficient when it comes to changes to the sparsity structure, and is very inefficient when it comes to looking up columns\cite{csr}.
+
+Since the dokumentation of \texttt{SciPy} is very sparse, it is difficult to say whether \texttt{lil\_matrix} is the right matrix representation for this project, but since both row and column look ups are needed in the Gaussian elimination I assesed it to be the best representation of the ones available.
+
+Other improvements made to the implementation includes use of dictionaries and sets, minimisation of data needed in the memory at a time by only having one matrix in the memory at a time, and minimisation of work done in the Gaussian elimination by only bringing the matrix to reduced row echelon form.
+
+During the project experiments were made to avoid Gaussian elimination. These included but was not limited to experiments with SVD and LU elimination. But non of the methods tried gave good results. If they could run on the input data they gave wrong results.
+
+The program has been tested in two different ways. The first method was unittesting which has been done throughout the development. In the last phase of the development the program has been run on big meshes to test the usability of the program. In this phase a program called \texttt{preproc} was made to translate the meshes represented by OFF files into a format accepted by \texttt{Betti}. The unittests run without any problems, but the run on the data sets returns results which seem to be too large. There is not time to figure out what is wrong with the implementation and if there is anything wrong before the hand in of this report.
+
+\section{Future Work}
+The future for this project involves run on more data sets, preferably small data sets, where it is possible to count the number of holes by hand. The data sets should be represented by OFF files, so it is possible to test whether the previously mentioned errors arises from the translation from OFF file to \texttt{Betti} input file. These data sets could be alpha complexes, please see \cite{Edelsbrunner} for a walk-through of the theory. When it has been concluded whether or not there is an error in the implementation of \texttt{Betti} or \texttt{preproc}, and this error, if it exists, has been corrected, the project can be expanded to solve problems with persistent homology, please see \cite{Edelsbrunner} for a definition. 
+
+Another possible future improvement to the project would be to improve the Gaussian elimination. This could be done by implementing some bookkeeping concerning which coordinates of the matrix that are nonzero, in a way that makes it easy to find the elements that are nonzero both from a row and from a column approach.
+
+
 
 \begin{thebibliography}{9}
 
@@ -780,9 +934,13 @@ Herbert Edelsbrunner, \emph{A Short Course in Computational Geometry and Topolog
 \bibitem{Kun} Jeremy Kun, \emph{Computing Homology}, \url{http://jeremykun.com/2013/04/10/computing-homology/}
 \bibitem{Nadathur} Prerna Nadathur, \emph{An Introduction to Homology}, August 16, 2007
 \bibitem{LinAlg} Niels V. Pedersen, \emph{Liniær Algebra}, 2nd edition, Københavns Universitet Matematisk Afdeling, 2009
-\bibitem{wikiQuo} unknown, \emph{Quotient Space (linear algebra)}, \url{https://en.wikipedia.org/wiki/Quotient_space_(linear_algebra)}, Wikipedia, March 25 2016
+\bibitem{karlrupp} Karl Rupp, \emph{Sparse Matrix Transposition: Datastructure Performance Comparison} \url{https://www.karlrupp.net/2016/02/sparse-matrix-transposition-datastructure-performance-comparison/}
+\bibitem{csr} unknown, \emph{csr\_matrix}, \url{https://github.com/scipy/scipy/blob/v0.17.1/scipy/sparse/csr.py#L21-L437}, Scipy source code
+\bibitem{dok} unknown, \emph{dok\_matrix}, \url{http://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.sparse.dok_matrix.html}, Scipy dokumentation
 \bibitem{wikiBetti} unknown, \emph{Betti Number}, \url{https://en.wikipedia.org/wiki/Betti_number}, Wikipedia, March 29 2016
+\bibitem{wikiSparse} unkown, \emph{Sparse Matrix}, \url{https://en.wikipedia.org/wiki/Sparse_matrix}, Wikipedia, June 11 2016
 \bibitem{wikiSVD} unknown, \emph{SVD}, \url{https://en.wikipedia.org/wiki/Singular_value_decomposition}, Wikiperia, June 8 2016
+\bibitem{wikiQuo} unknown, \emph{Quotient Space (linear algebra)}, \url{https://en.wikipedia.org/wiki/Quotient_space_(linear_algebra)}, Wikipedia, March 25 2016
 \end{thebibliography}
 
 \appendix
@@ -858,7 +1016,7 @@ In this appendix all the code made during the project can be found.
 \lstinputlisting{../code/row.py}
 \newpage
 \lstinputlisting{../code/im_ker.py}
-\subsection{tests}
+\subsection{Tests}
 \lstinputlisting{../code/hom_test.py}
 \lstinputlisting{../code/bound_test.py}
 \lstinputlisting{../code/gauss_test.py}
@@ -866,4 +1024,5 @@ In this appendix all the code made during the project can be found.
 \newpage
 \section{Preproc}
 \lstinputlisting{../code/preproc.py}
+\newpage\null
 \end{document}
