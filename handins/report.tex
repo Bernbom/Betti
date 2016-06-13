@@ -61,7 +61,10 @@ Supervisors: Aasa Feragen and François Lauze
 
 \abstract{This report presents simplicial homology theory based on linear algebra. The theory has been compresed into an algorithm for calculating Betti numbers, which has been implemented in \texttt{Python} using \texttt{SciPy}. The implementation and algorithm has been improved several times. It currenty has a worst case run time of $O((m\cdot n\cdot n!)^3)$, where $m$ is the number of maximal faces in the input, and $n$ is the maximal length of the maximal faces in the input. The run time is very much due to the Gaussian elimination which is a part of the implementation, and could be greatly improved by improvements to this step.
 
-The algorithm has been implemented by use of sparse \texttt{lil\_matrix} matrices, which has greatly improved the time and space complexity of the implementation.}
+The algorithm has been implemented by use of sparse \texttt{lil\_matrix} matrices, which has greatly improved the time and space complexity of the implementation.
+
+There is some uncertainty regarding the correctness of the implemented program, which can be removed by more testing.}
+
 \newpage\null\newpage
 \tableofcontents
 \newpage\null\newpage
@@ -238,6 +241,8 @@ For $i\in\mathbb{Z}$ the $i$'th reduced homology of $\Delta$ over $k$ can be fou
 \begin{equation}
 \bar{H}_i(\Delta;k):=\ker(\partial_i)/\im(\partial_{i+1}).
 \end{equation}
+
+In the remainder of the report the word reduced will be omitted.
 
 Having the homology groups, we can calculate their dimensions since they are vector spaces; these are also called the Betti numbers of the simplicial complex. The $i$'th Betti number can be understood as the number of holes which can be caught by an $i$-sphere \cite{wikiBetti}.
 
