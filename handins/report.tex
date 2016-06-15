@@ -63,11 +63,11 @@ Supervisors: Aasa Feragen and François Lauze
 
 The algorithm has been implemented by use of sparse \texttt{lil\_matrix} matrices, which has greatly improved the time and space complexity of the implementation.
 
-The program has been tested by unit testing and run on meshes of which the biggest consisted of 26702 nodes. There is some uncertainty regarding the correctness of the implemented program, because the unit tests returned the correct results, but the run on the meshes gave results that seem too high. This uncertainty could be removed with more tests.}
+The program has been tested by unit testing and run on meshes of which the biggest consisted of 26702 nodes. The tests were successful and there are no reason to doubt the correctness of the implementation.}
 
 \newpage\null\thispagestyle{empty}\newpage
 \tableofcontents
-\newpage\null\thispagestyle{empty}\newpage
+\newpage\null\thispagestyle{plain}\newpage
 \chapter*{Introduction}
 Homology theory is part of algebraic topology and deals with holes in geometric objects. In this report, the geometric objects are simplicial complexes, which are made up of triangles of different dimensions that are glued together.
 
@@ -581,6 +581,7 @@ This algorithm consists of several subalgorithms. We start from the beginning. T
 def prepare(simplicial_complex)
     combinations = set([])
     for maximal_face in simplicial_complex:
+    	sort maximal_face
         for i in range(len(maximal_face)):
             combinations.update(combinations of 0-dimensional faces in maximal_face of length i)
     return combinations    
@@ -620,7 +621,7 @@ def dims(bound_i)
 \caption{Algorithm for finding the dimensions of the kernel and the image of a boundary matrix.}
 \label{fig:Algorithm_dims}
 \end{figure}
-Note that Gaussian elimination \ref{fig:Algorithm_gauss} has been used instead of a faster method such as singular value decomposition because a correct result instead of an approximation is needed in order for the Betti values to be correct \textbf{HERE!!!!}. Have a look at the discussion in the end of the report for more details.
+Note that Gaussian elimination until row echelon form, see figure \ref{fig:Algorithm_gauss}, has been used, instead of a faster method such as singular value decomposition because a correct result, instead of an approximation, is needed in order for the Betti values to be correct. This is also why the algorithm stops when row echelon form has been reached, instead of continuing to reduced row echelon form. The last steps from row echelon form to reduced row echelon form includes division, which can introduce round-off errors, since the matrices are integer matrices. Have a look at the discussion in the end of the report for more details.
 \begin{figure}[H]
 \begin{lstlisting}[numbers=left]
 def elimination(bound_i)
@@ -632,9 +633,11 @@ def elimination(bound_i)
            continue
        if nonzero[0]!=r:
            swap the row of r with the row of nonzero
-       scale the row of r such that (r,c) = 1
+       pivot = bound_i[r,c]
        for l in nonzero[1:]:
-           subtract row r from row l until (l,c)=0
+           temp = bound_i[l,c]
+           scale row l by pivot
+           subtract row r from row l temp times
        r += 1
        c += 1
    return bound_i
