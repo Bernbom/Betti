@@ -15,10 +15,10 @@ def boundary(a,b):
     b = {tuple(e): i
          for i, e in enumerate(map(lambda s: s.split(','),b))}
     if numrow ==0:
-        B = sp.lil_matrix(np.ones((1,numcol)),dtype=np.int8)
+        B = sp.lil_matrix(np.ones((1,numcol)),dtype=np.int64)
     else:
         # make matrix
-        B = sp.lil_matrix((numrow,numcol),dtype =np.int8)
+        B = sp.lil_matrix((numrow,numcol),dtype =np.int64)
         # insert 1's and -1's for the boundary
         for j in xrange(numcol):
             for i in xrange(len(a[j])):
