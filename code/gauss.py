@@ -19,13 +19,12 @@ def elimination(A):
         first_nonzero = nonzero_relative_col[0]+row #conversion from relative to absolute
         if first_nonzero!=row:
             r.swap(A,row,first_nonzero)
-        p = float(A[row,col]) #make p a float such that 1/p does not truncate to 0
-        r.scale(A,row,1/p)
-
+        pivot = A[row,col]
         for l in nonzero_relative_col: 
             if l!=0: # since l is realtive from offset row
-                n = A[l+row,col]
-                r.combine(A,l+row,row,-n)
+                temp = A[l+row,col]
+                r.scale(A,l+row,pivot)
+                r.combine(A,l+row,row,-temp)
         row += 1
         col += 1
     return A
