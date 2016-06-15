@@ -2,8 +2,9 @@ import sys
 
 def simcom_prep(m_file, target_file):
     """
-    given an off file containing a simplicial complex returns a file containing 
-    the simplicial complex in one line in a format ready for betti.py 
+    given a file containing a simplicial complex, with one maximal face per line
+    split into 0-faces by tabs, returns a file containing the simplicial complex
+    in one line, in a format ready for betti.py 
     """
     in_file = open(m_file)
     out_file = open(target_file,'w')
