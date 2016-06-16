@@ -3,7 +3,7 @@ import numpy as np
 import scipy.sparse as sp
 import row
 
-class TestGauss(unittest.TestCase):
+class TestRow(unittest.TestCase):
 
     def test_swap(self):
         A = np.matrix([[ -1, -1, -1, 0, 0, 0, 0, 0 ],

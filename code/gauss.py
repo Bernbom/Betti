@@ -1,4 +1,3 @@
-#import numpy as np
 from scipy.sparse import dok_matrix
 import row as r
 import datetime

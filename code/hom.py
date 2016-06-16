@@ -1,5 +1,3 @@
-#import numpy as np
-#import scipy.sparse
 import prep
 import gauss
 import bound as b
