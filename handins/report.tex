@@ -61,7 +61,7 @@ Supervisors: Aasa Feragen and François Lauze
 
 \abstract{This report presents simplicial homology theory, a linear algebra based topological theory. The theory has been compressed into an algorithm for calculating Betti numbers, which has been implemented in \texttt{Python} using \texttt{SciPy}. The implementation and algorithm have been improved several times. It currenty has a worst case runtime of $O((m\cdot 2^n)^3)$, where $m$ is the number of maximal faces in the input, and $n$ is the maximal length of the maximal faces in the input. The runtime is dominated by the Gaussian elimination, which is part of the algorithm, and could be greatly improved by improvements to this step.
 
-The algorithm has been implemented by use of sparse \texttt{lil\_matrix} matrices, which has greatly improved the time and space complexity of the implementation.
+The algorithm has been implemented by use of sparse \texttt{lil\_matrix} matrices, which has greatly improved the expected time and space complexity of the implementation.
 
 The program has been tested by unit testing and run on meshes, of which the biggest consisted of 12806 nodes. The tests were successful and there are no reason to doubt the correctness of the implementation. There is however an issue with the runtime of the program. It is very slow on the datasets with 26702 nodes or more, that were run as a part of the project.}
 
