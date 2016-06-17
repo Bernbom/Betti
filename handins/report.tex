@@ -63,7 +63,7 @@ Supervisors: Aasa Feragen and François Lauze
 
 The algorithm has been implemented by use of sparse \texttt{lil\_matrix} matrices, which has greatly improved the time and space complexity of the implementation.
 
-The program has been tested by unit testing and run on meshes of which the biggest consisted of 26702 nodes. The tests were successful and there are no reason to doubt the correctness of the implementation.}
+The program has been tested by unit testing and run on meshes, of which the biggest consisted of 12806 nodes. The tests were successful and there are no reason to doubt the correctness of the implementation. There is however an issue with the runtime of the program. It is very slow on the datasets with 26702 nodes or more, that were run as a part of the project.}
 
 \newpage\null\thispagestyle{empty}\newpage
 \tableofcontents
@@ -944,7 +944,7 @@ The mesh of figure \ref{fig:mesh_2d} was run on a older incorrect version of the
 \caption{The smallest dataset}
 \label{fig:mesh_}
 \end{figure}
-The dataset visualised in figure \ref{fig:mesh_} was run in approximately six and a half hours. It is a mesh with 26702 nodes. The result of the run was the following Betti vector $[0,40,36410,0,0]$. \textbf{This section will be updated with the new results as soon as they are ready}
+The dataset visualised in figure \ref{fig:mesh_} was run in approximately six and a half hours, on an older version of \texttt{Betti}. It is a mesh with 26702 nodes. The result of the run was the following Betti vector $[0,40,36410,0,0]$. These Betti numbers were estimated to be to high, and resulted in several bugs being found in the code. When the dataset is run on the newest, correct version of \texttt{Betti}, the runtime is much slower, and it has not been possible to get a result, before the deadline of this report. It is most likely an increase in the number of nonzero elements in the matrix, and thereby the number of calculations, that is to blame for the increased runtime.
 
 \chapter{Concluding Remarks}
 In this report, the basics of simplicial homology have been presented, including the definition of homology groups of a simplicial complex and the associated Betti numbers.
@@ -970,7 +970,7 @@ Other improvements made to the implementation includes use of dictionaries and s
 
 During the project, experiments were made to avoid Gaussian elimination. These included, but was not limited to, experiments with SVD and LU elimination, but none of the methods tried gave good results. If they could run on the input data they gave wrong results.
 
-The program has been tested two different ways. The first method was unit testing which has been done throughout the development. In the last phase of the development, the program was also run on meshes, of which the biggest with a successful run consisted of 26702 nodes, to test the usability of the program. In this phase a program called \texttt{Preproc} was made to translate the meshes into a format accepted by \texttt{Betti}. The tests were run without problems.
+The program has been tested two different ways. The first method was unit testing which has been done throughout the development. In the last phase of the development, the program was also run on meshes, to test the usability of the program. The biggest mesh, with a successful run, consisted of 12806 nodes.  In this phase a program called \texttt{Preproc} was made to translate the meshes into a format accepted by \texttt{Betti}. The tests that finished were run without problems, but the runtime of \texttt{Betti} resulted in only approximately half the tests finishing before the deadline of this report.
 
 In the future this project can be expanded to solve problems with persistent homology, please see \cite{Edelsbrunner} for a definition. 
 
