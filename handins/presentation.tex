@@ -12,6 +12,11 @@
 
 \DeclareMathOperator{\im}{im}
 
+\setbeamertemplate{sidebar right}{}
+\setbeamertemplate{footline}{%
+\hfill\usebeamertemplate***{navigation symbols}
+\hspace{1cm}\insertframenumber{}/\inserttotalframenumber}
+
 \begin{document}
 \lstset{language=python,frame=single,breaklines=true}
 
@@ -75,12 +80,8 @@ where $\textnormal{sign}(j,\sigma) = (-1)^{\textnormal{index}(j)-1}$.
 \end{mydef}
 }
 
-\frame{\frametitle{Example of Boundary Matrix}
-See blackboard.
-}
-
 \begin{frame}
-\frametitle{$\partial_{i}\circ \partial_{i}=0$}
+\frametitle{$\partial_{i}\circ \partial_{i+1}=0$}
 \pause
 \begin{itemize}
 \item Note that:
@@ -135,6 +136,18 @@ H_i = \dim(\ker(\partial_i))-\dim(\im(\partial_{i+1})).
 \end{frame}
 
 \section{Betti}
+\begin{frame}[fragile]
+\frametitle{Old Way of Finding Faces}
+\begin{lstlisting}[numbers=left]
+def prepare(simplicial_complex):
+    combinations = simplicial_complex
+    for maximal_face in simplicial_complex:
+        for l in range(1,len(maximal_face)):
+            combinations = combinations + combinations of vertices in maximal_face of length l
+    combinations = list(set(combinations))
+    return combinations
+\end{lstlisting}
+\end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Finding faces}
@@ -144,21 +157,35 @@ def prepare(simplicial_complex)
     for maximal_face in simplicial_complex:
     	sort maximal_face
         for i in range(len(maximal_face)):
-            combinations.update(combinations of 0-dimensional faces in maximal_face of length i)
+            combinations.update(combinations of vertices in maximal_face of length i)
     return combinations    
 \end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Old Way of Finding Faces}
-\begin{lstlisting}[numbers=left]
-def prepare(simplicial_complex):
-    combinations = simplicial_complex
-    for maximal_face in simplicial_complex:
-        for l in range(1,len(maximal_face)):
-            combinations = combinations + combinations of 0-dimensional faces in maximal_face of length l
-    combinations = list(set(combinations))
-    return combinations
+\frametitle{Old Gaussian Elimination}
+\begin{lstlisting}
+def elimination(bound_i)
+   i,j = 0,0
+   while j < number of columns and i < number of rows:
+       if bound_i[i,j]==0:
+            find the first row, k, such that bound_i[k,j]!=0 and swap row i and k
+            if there is no k
+                j += 1
+                continue
+\end{lstlisting}
+\end{frame}
+\begin{frame}[fragile]
+\frametitle{Old Gaussian Elimination - Continued}
+\begin{lstlisting}
+        scale row i such that bound_i[i,j]==1
+        for L in range(number of rows):
+            if L != i:
+                n = bound_i[L,j]
+                subtract row r from row L, temp times
+        i += 1
+        j += 1
+    return bound_i
 \end{lstlisting}
 \end{frame}
 
@@ -188,33 +215,6 @@ def elimination(bound_i)
        r += 1
        c += 1
    return bound_i
-\end{lstlisting}
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{Old Gaussian Elimination}
-\begin{lstlisting}
-def elimination(bound_i)
-   i,j = 0,0
-   while j < number of columns and i < number of rows:
-       if bound_i[i,j]==0:
-            find the first row, k, such that bound_i[k,j]!=0 and swap row i and k
-            if there is no k
-                j += 1
-                continue
-\end{lstlisting}
-\end{frame}
-\begin{frame}[fragile]
-\frametitle{Old Gaussian Elimination - Continued}
-\begin{lstlisting}
-        scale row i such that bound_i[i,j]==1
-        for L in range(number of rows):
-            if L != i:
-                n = bound_i[L,j]
-                subtract row r from row L, temp times
-        i += 1
-        j += 1
-    return bound_i
 \end{lstlisting}
 \end{frame}
 
