@@ -39,7 +39,7 @@
 \begin{frame}
 \frametitle{Simplices} 
 \begin{mydef}[faces]
-Let $\Gamma$ be a structure of n vertices. An $l$-face of $\Gamma$ is a subset of the vertices of $\Gamma$ of cardinality $l+1$. The empty set, $\emptyset$, is the unique face of dimension $-1$.
+Let $\Gamma$ be a structure of n vertices. An $l$-face of $\Gamma$ is a subset of the vertices of $\Gamma$ of cardinality $l+1$. The empty set, $\emptyset$, is the unique face of cardinality $-1$.
 \end{mydef}
 \pause
 
@@ -102,7 +102,7 @@ by linearity of the $\partial_i$'s \pause
 \end{frame}
 
 \begin{frame}
-\frametitle{$\partial_{i}\circ \partial_{i}=0$}
+\frametitle{$\partial_{i}\circ \partial_{i+1}=0$}
 \begin{itemize}
 \item Assume: $\dots a \dots b \dots$
 \item Then we have:
@@ -136,6 +136,21 @@ H_i = \dim(\ker(\partial_i))-\dim(\im(\partial_{i+1})).
 \end{frame}
 
 \section{Betti}
+\begin{frame}[fragile]
+\frametitle{Betti}
+\begin{lstlisting}[numbers=left]
+def betti(d,maximal_faces)
+    find the faces of the simplex 
+    sort the faces into lengths
+    for i in range(d+1) # to include bound_-1
+        caluculate boundary matrix bound_i
+        calculate dimensions of image and kernel of bound_i
+    for i in range(d+2):
+        H[i] = dim_ker_i - dim_im_i+1 # where dimensions are 0 if not calculated
+    return H
+\end{lstlisting}
+\end{frame}
+
 \begin{frame}[fragile]
 \frametitle{Old Way of Finding Faces}
 \begin{lstlisting}[numbers=left]
@@ -182,7 +197,7 @@ def elimination(bound_i)
         for L in range(number of rows):
             if L != i:
                 n = bound_i[L,j]
-                subtract row r from row L, temp times
+                subtract row r from row L, n times
         i += 1
         j += 1
     return bound_i
@@ -215,6 +230,25 @@ def elimination(bound_i)
        r += 1
        c += 1
    return bound_i
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Creating Boundary Matrices}
+\begin{lstlisting}[numbers=left]
+def boundary(a,b):
+    numrow = len(b)
+    numcol = len(a)
+    if numrow == 0: # if it is bound_0 being calculated
+        B = matrix with 1 row and numcol columns consisting of 1s
+    else:
+        initialise B to a numrow*numcol matrix of 0s 
+        for sigma in a:
+            for j in sigma:
+                i = index of sigma\j in b
+                k = index of sigma in a
+                B[i,k] = (-1)**(index of j in sigma) 
+    return B
 \end{lstlisting}
 \end{frame}
 
